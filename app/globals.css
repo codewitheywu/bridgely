@@ -4,27 +4,66 @@
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Soft Cloud. Text colors are AA-checked against --color-base. */
 @theme {
-  --color-primary: #E86B32;
-  --color-primary-600: #C2501C; /* AA with white text */
-  --color-primary-700: #A94417;
-  --color-primary-50: #FDF0E9;
+  --color-base: #E9EDF6;
+  --color-edge: #D5DBE7;
+  --color-primary: #E86B32;     /* decoration only */
+  --color-primary-600: #C2501C; /* button bg, white text */
+  --color-primary-700: #A94417; /* links, hover */
   --color-navy: #1C234B;
-  --color-navy-700: #2A3366;
-  --color-surface: #F4F6FC;
   --color-ink: #333333;
-  --color-muted: #69727D;
-  --color-line: #C4C4C4;
+  --color-muted: #5E6670;
   --color-success: #007518;
   --color-danger: #B42318;
   --radius-pill: 45px;
-  --radius-card: 12px;
+  --shadow-raised: 12px 12px 24px #C5CCDA, -12px -12px 24px #FFFFFF;
+  --shadow-inset: inset 4px 4px 8px #C5CCDA, inset -4px -4px 8px #FFFFFF;
+  --shadow-pressed: inset 3px 3px 8px rgb(0 0 0 / 0.28);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --shadow-raised: 6px 6px 12px #C5CCDA, -6px -6px 12px #FFFFFF;
+  }
 }
 
 body {
-  @apply bg-surface text-ink font-sans antialiased;
+  @apply bg-base text-ink font-sans antialiased;
 }
 
 :focus-visible {
   @apply outline-2 outline-offset-2 outline-primary-600;
+}
+
+a {
+  @apply text-primary-700 hover:underline;
+}
+
+@utility card {
+  @apply rounded-[28px] border border-white/70 bg-base p-6 shadow-raised md:p-10;
+}
+
+@utility field {
+  @apply w-full rounded-2xl border border-edge bg-base px-4 py-3.5 text-base text-ink shadow-inset outline-none placeholder:text-muted focus:border-primary-600 focus:ring-2 focus:ring-primary-600/25;
+}
+
+@utility btn {
+  @apply inline-flex min-h-[52px] cursor-pointer items-center justify-center gap-2 rounded-pill px-7 font-medium no-underline! transition-shadow duration-150 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none;
+}
+
+@utility btn-primary {
+  @apply btn bg-primary-600 text-white! shadow-raised hover:bg-primary-700 active:shadow-pressed;
+}
+
+@utility btn-soft {
+  @apply btn border border-white/70 bg-base text-navy! shadow-raised active:shadow-inset;
+}
+
+@utility glass {
+  @apply rounded-[22px] border border-white/80 bg-white/90;
+  @supports (backdrop-filter: blur(1px)) {
+    background: rgb(255 255 255 / 0.55);
+    backdrop-filter: blur(18px);
+  }
 }
