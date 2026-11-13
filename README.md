@@ -17,16 +17,17 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 ## How to use the demo
 
 **As an employee (Maria or Juan)**
-1. **Home** shows your balance, recent recognitions and latest orders.
+1. **Home** shows your available, earned and redeemed points, a recognition feed, rewards within reach, and recent orders.
 2. **Points** lists every award, redemption and refund, with a running balance.
-3. **Rewards**: browse the catalog (image, description, price in points, stock) and **Add to cart**.
+3. **Rewards**: search or filter by category, then browse the catalog (image, description, price in points, stock) and **Add to cart**. Rewards you can't afford yet show exactly how many more points you need.
 4. **Cart**: change quantities and check the "balance after" line, then **Redeem**. Checkout is blocked if you can't afford the cart or an item is out of stock.
 5. **Orders** shows your redemption history with Pending / Fulfilled / Cancelled status.
 
 **As the admin**
-1. **Overview** has pending-order and low-stock counts, employee balances, and the **Award points** form (employee, points, message).
-2. **Rewards**: add a reward, or open **Edit** on any reward to change its name, description, price, stock or image, or to deactivate it. Rewards are never deleted, so old orders keep their history.
-3. **Orders**: filter by status, then **Mark fulfilled** or **Cancel order**. Cancelling refunds the points and restores the stock automatically.
+1. **Overview** has pending-order, points-awarded, active-reward and low-stock counts, the **Award points** form (employee, points, message), and a recent-recognition feed.
+2. **Employees** lists each employee's balance, points earned and redeemed, and order count, with a one-click **Award** shortcut.
+3. **Rewards**: add a reward, or open **Edit** on any reward to change its name, description, price, stock or image, or to deactivate it. Rewards are never deleted, so old orders keep their history.
+4. **Orders**: filter by status (with counts), then **Mark fulfilled** or **Cancel order**. Cancelling refunds the points and restores the stock automatically.
 
 **Things to try:** double-click **Redeem** (only one order is created). Try buying the *Company hoodie* (out of stock) or *Wireless earbuds* (more than Maria can afford). Log in as Maria and open `/admin` (you're redirected). Cancel an order and watch Maria's balance and the stock come back.
 
@@ -62,7 +63,6 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 - **Reward images are placeholders** until an admin uploads one (Admin → Rewards → Edit). Landing-page screenshots are placeholders too.
 - **The demo buttons let anyone with the link log in as any test account.** This is intentional for assessment; set `DEMO_MODE=false` to hide them.
 - **No password reset**, profile editing or admin-user management. Promoting a user to admin is done in SQL.
-- **The rewards catalog has no search or category filter**, and lists have no pagination. That's fine for demo-sized data.
 - **The cart is stored in the browser** (per user, per device). Orders, balances and stock are all stored in the database.
 - **Dates are formatted on the server (UTC)**, so they can be off by a day near midnight in your time zone.
 - **No automated end-to-end test suite.** The behavior above was verified with scripts against the live database.
