@@ -47,8 +47,11 @@ export function AuthShell({ title, children }: { title: string; children: React.
         <p className="max-w-md text-lg text-muted">Earn points when your team celebrates you. Redeem them for rewards you actually want.</p>
         <PointsCard points={1200} note='+150 from Admin · "Great demo!"' />
       </section>
-      <section className="mx-auto flex w-full max-w-[420px] flex-col gap-8">
+      <section className="mx-auto flex w-full max-w-[420px] flex-col gap-6">
         <div className="md:hidden"><Logo /></div>
+        <Link href="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-pill pr-3 text-sm font-medium text-muted! no-underline! hover:text-primary-700!">
+          <Icon name="back" className="size-4" />Back to home
+        </Link>
         <div className="card flex flex-col gap-5 sm:p-8!">
           <h1 className="text-[28px] font-semibold text-navy">{title}</h1>
           {children}
