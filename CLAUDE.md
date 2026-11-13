@@ -39,7 +39,8 @@ When a task spans several areas, start with `/senior-team-lead`. It splits the w
 - Pre-seeded award history so the dashboards aren't empty.
 
 ## Brand (Talent Bridging style)
-Poppins · primary orange `#E86B32` · navy `#1C234B` · surface `#F4F6FC` · text `#333333` · muted `#69727D` · border `#C4C4C4` · pill buttons (45px radius) · 12px card radius · flat, no shadows. The full spec is in the `senior-uiux-designer` skill.
+Poppins · primary orange `#E86B32` · navy `#1C234B` · text `#333333` · muted `#69727D` · pill buttons (45px radius).
+**Style: "Soft Cloud"** (chosen 2026-11-14): soft UI on a `#E9EDF6` base, with raised cards and pressed-in inputs. Frosted glass is used only for accent moments like the points card. Primary buttons stay solid orange (`#C2501C`). The full spec is in the `senior-uiux-designer` skill.
 
 ## Definition of done
 Every requirement in the brief passes the QA test plan on desktop and on a 375px mobile viewport, against the **deployed** URL, followed by a README covering the demo, the AI tools used, and known limitations.

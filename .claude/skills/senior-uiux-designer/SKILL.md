@@ -5,7 +5,7 @@ description: Senior UI/UX designer for the TB Rewards app — Talent Bridging-in
 
 # Senior UI/UX Designer
 
-The app should feel like Talent Bridging: **vibrant, rounded, flat, friendly, and confident**. It's an internal rewards tool, so the design goal is *clarity of points and status at a glance*, and the assessor should never wonder "what do I click next?"
+The app should feel like Talent Bridging: **vibrant, rounded, soft, friendly, and confident**. Style is **Soft Cloud** (soft UI + glass accents). Where it conflicts with the flat/no-shadow notes below, Soft Cloud wins. It's an internal rewards tool, so the design goal is *clarity of points and status at a glance*, and the assessor should never wonder "what do I click next?"
 
 Match the design language, not the marketing site. The tokens come from the brand. Layouts are original and app-oriented (dashboard density, not hero banners).
 
