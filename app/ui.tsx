@@ -1,17 +1,12 @@
-import { Suspense } from "react";
-import { logout } from "./auth-actions";
-import { NavLinks } from "./nav";
 import Link from "next/link";
+import { Icon } from "./icons";
 
-const icon = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
-export const Star = (p: { className?: string }) => (
-  <svg aria-hidden="true" viewBox="0 0 24 24" {...icon} {...p}><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.6L6 22l1.5-7.2L2 10l7.1-1.1z" /></svg>
-);
+export const Star = ({ className }: { className?: string }) => <Icon name="star" className={className} />;
 
 export function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-3 text-xl font-semibold text-navy! no-underline!">
-      <span className="grid size-11 place-items-center rounded-2xl bg-base shadow-raised">
+    <Link href="/" className="flex items-center gap-3 text-lg font-semibold text-navy! no-underline!">
+      <span className="grid size-10 place-items-center rounded-2xl bg-base shadow-raised">
         <Star className="size-5 text-primary" />
       </span>
       TB Rewards
@@ -54,7 +49,7 @@ export function AuthShell({ title, children }: { title: string; children: React.
       </section>
       <section className="mx-auto flex w-full max-w-[420px] flex-col gap-8">
         <div className="md:hidden"><Logo /></div>
-        <div className="card flex flex-col gap-5">
+        <div className="card flex flex-col gap-5 sm:p-8!">
           <h1 className="text-[28px] font-semibold text-navy">{title}</h1>
           {children}
         </div>
@@ -68,39 +63,59 @@ export const orderNo = (n: number) => `#${1000 + n}`;
 export const pts = (n: number) => `${n.toLocaleString()} pts`;
 
 const tones: Record<string, string> = { pending: "bg-[#FFF4D6] text-[#8A5A00]", fulfilled: "bg-[#E6F4EA] text-success", cancelled: "bg-[#FDECEA] text-danger" };
-export const Status = ({ s }: { s: string }) => <span className={`rounded-pill px-3 py-1 text-[13px] font-medium capitalize ${tones[s]}`}>{s}</span>;
+export const Status = ({ s }: { s: string }) => <span className={`inline-flex shrink-0 rounded-pill px-3 py-1 text-[13px] font-medium capitalize ${tones[s]}`}>{s}</span>;
 
-export const Empty = ({ children }: { children: React.ReactNode }) => <div className="card text-center text-muted">{children}</div>;
-export const Loading = () => <div aria-label="Loading" className="h-64 animate-pulse rounded-[28px] bg-edge/60" />;
-export const Title = ({ children }: { children: React.ReactNode }) => <h1 className="text-[28px] font-semibold text-navy">{children}</h1>;
+export const Empty = ({ children }: { children: React.ReactNode }) => <div className="card py-10! text-center text-muted">{children}</div>;
+export const Loading = () => <div aria-label="Loading" className="h-64 animate-pulse rounded-3xl bg-edge/60" />;
+
+export function PageHeader({ title, description, action }: { title: string; description?: string; action?: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold text-navy md:text-3xl">{title}</h1>
+        {description && <p className="text-muted">{description}</p>}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+export function Section({ title, action, children, className = "" }: { title: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
+  return (
+    <section className={`flex flex-col gap-4 ${className}`}>
+      <div className="flex min-h-8 items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold text-navy">{title}</h2>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+export function Stat({ label, value, hint, highlight }: { label: string; value: React.ReactNode; hint?: string; highlight?: boolean }) {
+  return (
+    <div className={`card flex flex-col gap-1 ${highlight ? "border-navy! bg-navy!" : ""}`}>
+      <span className={`text-sm ${highlight ? "text-white/80" : "text-muted"}`}>{label}</span>
+      <span className={`text-2xl font-semibold md:text-3xl ${highlight ? "text-[#F4A47E]" : "text-navy"}`}>{value}</span>
+      {hint && <span className={`text-[13px] ${highlight ? "text-white/80" : "text-muted"}`}>{hint}</span>}
+    </div>
+  );
+}
+
+export const Avatar = ({ name }: { name: string }) => (
+  <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-navy text-sm font-semibold text-white">
+    {name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()}
+  </span>
+);
 
 export function RewardImage({ src, alt }: { src: string | null; alt: string }) {
   // eslint-disable-next-line @next/next/no-img-element -- Supabase public URLs, no optimizer config needed
   if (src) return <img src={src} alt={alt} className="aspect-[4/3] w-full rounded-2xl object-cover" />;
   return (
     <div role="img" aria-label={alt} className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-inset">
-      <div className="absolute top-4 right-4 size-20 rounded-full bg-primary opacity-80 blur-md" />
-      <div className="absolute bottom-4 left-6 size-12 rounded-full bg-navy opacity-60 blur-sm" />
-      <Star className="absolute inset-0 m-auto size-10 text-white" />
+      <div className="absolute top-3 right-3 size-[40%] rounded-full bg-primary opacity-80 blur-md" />
+      <div className="absolute bottom-3 left-4 size-[25%] rounded-full bg-navy opacity-60 blur-sm" />
+      <Star className="absolute inset-0 m-auto size-[28%] text-white" />
     </div>
-  );
-}
-
-/** Signed-in shell. Pages read the session inside the Suspense boundary. */
-export function AppShell({ links, children }: { links: string[][]; children: React.ReactNode }) {
-  return (
-    <>
-      <header className="sticky top-0 z-20 border-b border-white/60 bg-base/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-8">
-          <Logo />
-          <NavLinks links={links} />
-          <form action={logout}><button className="btn-soft min-h-11 px-5">Log out</button></form>
-        </div>
-      </header>
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 pt-6 pb-28 md:px-8 md:pb-12">
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-      </main>
-      <NavLinks links={links} mobile />
-    </>
   );
 }

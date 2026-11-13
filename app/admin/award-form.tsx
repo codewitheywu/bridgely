@@ -3,13 +3,13 @@
 import { useActionState, useState } from "react";
 import { awardPoints } from "../actions";
 
-export function AwardForm({ people }: { people: { id: string; full_name: string }[] }) {
+export function AwardForm({ people, defaultRecipient = "" }: { people: { id: string; full_name: string }[]; defaultRecipient?: string }) {
   const [state, action, pending] = useActionState(awardPoints, undefined);
   const [len, setLen] = useState(0);
   return (
     <form action={action} onSubmit={() => setLen(0)} className="flex flex-col gap-4">
       <label className="flex flex-col gap-2 text-sm font-medium">Employee
-        <select name="recipient" required defaultValue="" className="field">
+        <select name="recipient" required defaultValue={defaultRecipient} key={defaultRecipient} className="field">
           <option value="" disabled>Choose an employee</option>
           {people.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
         </select>

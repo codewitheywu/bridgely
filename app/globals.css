@@ -17,14 +17,14 @@
   --color-success: #007518;
   --color-danger: #B42318;
   --radius-pill: 45px;
-  --shadow-raised: 12px 12px 24px #C5CCDA, -12px -12px 24px #FFFFFF;
+  --shadow-raised: 8px 8px 18px #C9D0DE, -8px -8px 18px #FFFFFF;
   --shadow-inset: inset 4px 4px 8px #C5CCDA, inset -4px -4px 8px #FFFFFF;
   --shadow-pressed: inset 3px 3px 8px rgb(0 0 0 / 0.28);
 }
 
 @media (max-width: 767px) {
   :root {
-    --shadow-raised: 6px 6px 12px #C5CCDA, -6px -6px 12px #FFFFFF;
+    --shadow-raised: 5px 5px 10px #C9D0DE, -5px -5px 10px #FFFFFF;
   }
 }
 
@@ -41,7 +41,7 @@ a {
 }
 
 @utility card {
-  @apply rounded-[28px] border border-white/70 bg-base p-6 shadow-raised md:p-10;
+  @apply rounded-3xl border border-white/70 bg-base p-5 shadow-raised sm:p-6;
 }
 
 @utility field {

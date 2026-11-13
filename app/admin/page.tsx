@@ -1,43 +1,54 @@
 import Link from "next/link";
 import { getMe } from "@/lib/auth";
-import { pts, Title } from "../ui";
+import { Avatar, date, Empty, PageHeader, pts, Section, Stat } from "../ui";
 import { AwardForm } from "./award-form";
 
-export default async function AdminHome() {
+type Recog = { id: string; points: number; message: string; created_at: string; giver_name: string; profiles: { full_name: string } | null };
+
+export default async function AdminHome({ searchParams }: { searchParams: Promise<{ to?: string }> }) {
+  const { to } = await searchParams;
   const { sb } = await getMe("admin");
-  const [{ data: people }, { count: pending }, { count: lowStock }] = await Promise.all([
-    sb.from("profiles").select("id, full_name, email, points_balance").eq("role", "employee").order("full_name"),
+  const [{ data: people }, { count: pending }, { count: lowStock }, { count: active }, { data: awards }, { data: recent }] = await Promise.all([
+    sb.from("profiles").select("id, full_name").eq("role", "employee").order("full_name"),
     sb.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
     sb.from("rewards").select("id", { count: "exact", head: true }).eq("is_active", true).lte("stock", 3),
+    sb.from("rewards").select("id", { count: "exact", head: true }).eq("is_active", true),
+    sb.from("points_ledger").select("delta").eq("reason", "award"),
+    sb.from("recognitions").select("id, points, message, created_at, giver_name, profiles!recognitions_recipient_id_fkey(full_name)")
+      .order("created_at", { ascending: false }).limit(5).overrideTypes<Recog[], { merge: false }>(),
   ]);
   return (
     <>
-      <Title>Admin overview</Title>
-      <div className="grid gap-4 sm:grid-cols-3">
-        {[["Pending orders", pending, "/admin/orders?status=pending"], ["Low-stock rewards", lowStock, "/admin/rewards"], ["Employees", people?.length, null]].map(([label, n, href]) => (
-          <div key={label as string} className="card flex flex-col gap-1 p-5!">
-            <span className="text-sm text-muted">{label}</span>
-            <span className="text-3xl font-semibold text-navy">{n ?? 0}</span>
-            {href && <Link href={href as string} className="text-sm">View</Link>}
-          </div>
-        ))}
+      <PageHeader title="Admin overview" description="Recognize your team and keep rewards flowing."
+        action={<Link href="/admin/orders?status=pending" className="btn-primary">Review pending orders</Link>} />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Stat highlight label="Pending orders" value={pending ?? 0} hint="Waiting for fulfilment" />
+        <Stat label="Points awarded" value={(awards ?? []).reduce((s, a) => s + a.delta, 0).toLocaleString()} hint="All time" />
+        <Stat label="Active rewards" value={active ?? 0} />
+        <Stat label="Low stock" value={lowStock ?? 0} hint="3 or fewer left" />
       </div>
-      <div className="grid items-start gap-6 lg:grid-cols-2">
-        <section className="card flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-navy">Award points</h2>
-          <AwardForm people={people ?? []} />
-        </section>
-        <section className="card flex flex-col gap-3 p-0! py-4!">
-          <h2 className="px-6 text-xl font-semibold text-navy">Employee balances</h2>
-          <ul className="divide-y divide-edge">
-            {people?.map((p) => (
-              <li key={p.id} className="flex justify-between gap-3 px-6 py-3">
-                <span className="min-w-0"><b className="block font-medium">{p.full_name}</b><span className="text-[13px] break-all text-muted">{p.email}</span></span>
-                <span className="shrink-0 font-semibold text-primary-700">{pts(p.points_balance)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+      <div className="grid items-start gap-8 lg:grid-cols-5">
+        <Section title="Award points" className="lg:col-span-2">
+          <div id="award" className="card"><AwardForm people={people ?? []} defaultRecipient={people?.some((p) => p.id === to) ? to : ""} /></div>
+        </Section>
+        <Section title="Recent recognition" className="lg:col-span-3" action={<Link href="/admin/employees" className="text-sm">All employees</Link>}>
+          {recent?.length ? (
+            <ul className="card flex flex-col divide-y divide-edge p-0!">
+              {recent.map((r) => (
+                <li key={r.id} className="flex gap-4 px-5 py-4 sm:px-6">
+                  <Avatar name={r.profiles?.full_name ?? "?"} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p><b className="font-semibold text-navy">{r.profiles?.full_name}</b> <span className="text-muted">received</span> <b className="text-success">+{pts(r.points)}</b></p>
+                      <span className="text-[13px] text-muted">{date(r.created_at)}</span>
+                    </div>
+                    <p className="text-muted">“{r.message}” · {r.giver_name}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : <Empty>No recognitions yet. Send the first one!</Empty>}
+        </Section>
       </div>
     </>
   );

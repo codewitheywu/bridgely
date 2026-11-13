@@ -1,5 +1,5 @@
 import { getMe } from "@/lib/auth";
-import { Title } from "../../ui";
+import { PageHeader } from "../../ui";
 import { CartView } from "./cart";
 
 export default async function CartPage() {
@@ -8,7 +8,7 @@ export default async function CartPage() {
   const { data } = await sb.from("rewards").select("id, name, image_url, price_points, stock").eq("is_active", true);
   return (
     <>
-      <Title>Your cart</Title>
+      <PageHeader title="Your cart" description="Review your rewards, then redeem them with your points." />
       <CartView uid={me.id} balance={me.points_balance} catalog={data ?? []} />
     </>
   );
