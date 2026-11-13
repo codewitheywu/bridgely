@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { supabase } from "./supabase";
 
 /** Current user + their profile from the DB (never from editable JWT metadata). Wrong role → their own home. */
 export async function getMe(role: "admin" | "employee") {
+  await connection(); // per-request page: never prerender (session checks read the clock)
   const sb = await supabase();
   const { data } = await sb.auth.getClaims();
   if (!data) redirect("/login");

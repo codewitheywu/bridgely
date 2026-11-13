@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 
 export function Field({ label, ...input }: { label: string } & React.ComponentProps<"input">) {
   return (
@@ -38,5 +39,15 @@ export function PasswordField({ autoComplete, hint }: { autoComplete: string; hi
         </span>
       )}
     </label>
+  );
+}
+
+/** Disables itself while its form is submitting (no double submits); optional confirm dialog. */
+export function Submit({ children, busy, ask, className = "btn-primary" }: { children: React.ReactNode; busy: string; ask?: string; className?: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button className={className} disabled={pending} onClick={ask ? (e) => { if (!confirm(ask)) e.preventDefault(); } : undefined}>
+      {pending ? busy : children}
+    </button>
   );
 }
