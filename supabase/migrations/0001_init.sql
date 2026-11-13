@@ -370,10 +370,12 @@ create policy ledger_select on public.points_ledger for select to authenticated
   using (user_id = (select auth.uid()) or public.is_admin());
 
 -- ---------- Privileges (defense in depth on top of RLS) ----------
-revoke all on all tables in schema public from anon;
-revoke insert, update, delete on public.profiles, public.recognitions, public.orders,
-                                 public.order_items, public.points_ledger from authenticated;
-revoke delete on public.rewards from authenticated;
+-- Explicit least-privilege grants: works whether or not the project auto-exposes new tables.
+revoke all on all tables in schema public from anon, authenticated;
+grant select on all tables in schema public to authenticated;     -- RLS decides which rows
+grant insert, update on public.rewards to authenticated;          -- RLS limits to admins; no delete
+grant all on all tables in schema public to service_role;         -- local seed script only
+grant usage, select on all sequences in schema public to service_role;
 
 revoke execute on function public.award_points(uuid, integer, text)  from public, anon;
 revoke execute on function public.redeem_cart(jsonb, uuid)           from public, anon;
