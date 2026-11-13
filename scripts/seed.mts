@@ -30,7 +30,7 @@ if (!ok(await admin.from("rewards").select("id").limit(1)).length) {
     { name: "Extra day off", description: "One additional paid leave day.", category: "Time off", price_points: 2000, stock: 10 },
     { name: "Company hoodie", description: "Soft navy hoodie with the TB logo.", category: "Merch", price_points: 600, stock: 0 },
     { name: "Lunch with the CEO", description: "Retired reward kept for order history.", category: "Experiences", price_points: 800, stock: 3, is_active: false },
-  ]));
+  ], { defaultToNull: false })); // missing keys use DB defaults, not null
 }
 
 // 3. Awards + sample orders through the real DB functions, signed in as each user
