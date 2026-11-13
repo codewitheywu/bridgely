@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    serverActions: { bodySizeLimit: "3mb" }, // reward image uploads; 2MB cap enforced in action + bucket
   },
   cacheComponents: true,
   partialPrefetching: true,
