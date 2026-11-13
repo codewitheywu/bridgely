@@ -12,7 +12,9 @@ A working sample of a Qarrot-style recognition app. Admins award points with a m
 | Employee | maria@example.com | `<DEMO_PASSWORD>` |
 | Employee | juan@example.com | `<DEMO_PASSWORD>` |
 
-You can also skip typing: the login page has **Admin / Maria / Juan** demo buttons. You can create a new employee account on **Sign up**. New accounts start with 0 points.
+You can also skip typing: the login page has **Admin / Maria / Juan** sample-account buttons.
+
+There is no public sign-up. Like Qarrot, new companies use **Book a demo**, and accounts are created by the team.
 
 ## How to use the demo
 
@@ -28,6 +30,7 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 2. **Employees** lists each employee's balance, points earned and redeemed, and order count, with a one-click **Award** shortcut.
 3. **Rewards**: add a reward, or open **Edit** on any reward to change its name, description, price, stock or image, or to deactivate it. Rewards are never deleted, so old orders keep their history.
 4. **Orders**: filter by status (with counts), then **Mark fulfilled** or **Cancel order**. Cancelling refunds the points and restores the stock automatically.
+5. **Requests** lists the demo requests from the public **Book a demo** page, with a one-click email reply.
 
 **Things to try:** double-click **Redeem** (only one order is created). Try buying the *Company hoodie* (out of stock) or *Wireless earbuds* (more than Maria can afford). Log in as Maria and open `/admin` (you're redirected). Cancel an order and watch Maria's balance and the stock come back.
 
@@ -36,7 +39,7 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 - **Stack:** Next.js 16 (App Router, Server Actions), TypeScript, Tailwind CSS v4, Supabase (Postgres, Auth, Storage), Vercel.
 - **The database is the source of truth.** Every change to points or stock runs inside one Postgres function and one transaction: `award_points`, `redeem_cart`, `fulfill_order` and `cancel_order`. The browser only sends reward IDs and quantities. Prices and totals are always computed in the database.
 - **No duplicate orders.** Each checkout carries an idempotency key with `unique(user_id, idempotency_key)`, plus a per-user row lock. The Redeem button is also disabled while a request is in flight.
-- **Permissions are enforced by the database, not just the UI.** Every table has row-level security, so employees can read only their own rows. All writes go through functions that check the caller's role. A `CHECK (points_balance >= 0)` constraint means balances can't go negative. A signup can never choose its own role.
+- **Permissions are enforced by the database, not just the UI.** Every table has row-level security, so employees can read only their own rows. All writes go through functions that check the caller's role. A `CHECK (points_balance >= 0)` constraint means balances can't go negative. There is no self sign-up, and no account can choose its own role. The public **Book a demo** form writes through one validated, rate-limited function (3 per email per day, 100 per hour, plus a bot trap), and only admins can read the results.
 - **Security headers** (Content-Security-Policy, frame denial, nosniff, HSTS, referrer policy) are on every page. The service-role key is used only by local scripts.
 - **Instant feedback:** navigation shows a skeleton immediately, every button shows a spinner while it works and can't be double-submitted, and results appear as toasts.
 
@@ -58,7 +61,7 @@ Latest run: **all 61 checks pass.**
 
 ## Run it locally
 
-1. Create a Supabase project and run [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) in its SQL Editor.
+1. Create a Supabase project and run [`0001_init.sql`](supabase/migrations/0001_init.sql), then [`0002_demo_requests.sql`](supabase/migrations/0002_demo_requests.sql), in its SQL Editor. Under Authentication → Sign In / Providers, turn **off** "Allow new users to sign up".
 2. Copy `.env.example` to `.env.local` and fill in the Supabase URL, anon key and service-role key, and set `DEMO_MODE` and `DEMO_PASSWORD`.
 3. `npm install`, then `npm run seed` to create the demo accounts, 6 rewards, awards and sample orders. The seed is safe to re-run.
 4. `npm run dev` and open http://localhost:3000.
@@ -73,7 +76,8 @@ Latest run: **all 61 checks pass.**
 
 - **Rewards show category artwork** until an admin uploads a photo (Admin → Rewards → Edit).
 - **The demo buttons let anyone with the link log in as any test account.** This is intentional for assessment; set `DEMO_MODE=false` to hide them.
-- **No password reset**, profile editing or admin-user management. Promoting a user to admin is done in SQL.
+- **No password reset**, profile editing or in-app user management. Accounts are created by the seed script or in Supabase, and promoting a user to admin is done in SQL.
+- **Demo requests are stored, not emailed.** Admins see them on the Requests page and reply by email. There is no CAPTCHA; a rate limit and a bot trap stand in for it.
 - **The cart is stored in the browser** (per user, per device). Orders, balances and stock are all stored in the database.
 - **Dates are formatted on the server (UTC)**, so they can be off by a day near midnight in your time zone.
 - **The CSP allows inline scripts.** Next.js needs them unless every page uses per-request nonces, which would stop pages from being prerendered.
