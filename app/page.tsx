@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Icon, type IconName } from "./icons";
 import { Reveal } from "./reveal";
-import { Avatar, Logo, PointsCard, pts, RewardImage, Star, Status } from "./ui";
+import { SiteFooter, SiteHeader } from "./site";
+import { Avatar, PointsCard, pts, RewardImage, Status } from "./ui";
 
-const nav = [["Features", "#features"], ["How it works", "#how"], ["FAQ", "#faq"]];
 const trust: [IconName, string, string][] = [
   ["shield", "Secure by design", "Every balance change is checked by the database"],
   ["phone", "Works everywhere", "Desktop, tablet and phone"],
   ["refresh", "Instant refunds", "Cancelled orders return points automatically"],
-  ["zap", "Ready in minutes", "No spreadsheets, no setup calls"],
+  ["zap", "Quick to roll out", "No spreadsheets or IT projects"],
 ];
 
 /* ---------- Product previews (real components, sample data) ---------- */
@@ -77,24 +77,7 @@ const faqs = [
 export default function Home() {
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-white/60 bg-base/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Logo />
-          <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-            {nav.map(([t, h]) => <a key={h} href={h} className="rounded-pill px-4 py-2 text-ink! no-underline! hover:text-primary-700!">{t}</a>)}
-            <Link href="/login" className="btn px-5 text-navy!">Log in</Link>
-            <Link href="/signup" className="btn-primary">Get started</Link>
-          </nav>
-          <details className="relative md:hidden">
-            <summary aria-label="Menu" className="btn-soft size-12 list-none p-0 [&::-webkit-details-marker]:hidden"><Icon name="menu" /></summary>
-            <div className="card absolute right-0 mt-3 flex w-64 flex-col gap-2 p-4!">
-              {nav.map(([t, h]) => <a key={h} href={h} className="rounded-xl px-3 py-3 text-ink! no-underline!">{t}</a>)}
-              <Link href="/login" className="btn-soft">Log in</Link>
-              <Link href="/signup" className="btn-primary">Get started</Link>
-            </div>
-          </details>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-24 px-4 pt-10 pb-20 sm:px-6 md:gap-32 md:pt-16 lg:px-8">
         <section className="grid items-center gap-12 md:grid-cols-2">
@@ -103,7 +86,7 @@ export default function Home() {
             <h1 className="text-4xl leading-tight font-semibold text-navy md:text-[56px]">Recognize great work. Reward it instantly.</h1>
             <p className="text-lg text-muted">TB Rewards turns thank-yous into points your team can spend on rewards they actually want.</p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/signup" className="btn-primary">Get started</Link>
+              <Link href="/book-a-demo" className="btn-primary">Book a demo</Link>
               <a href="#how" className="btn-soft">See how it works</a>
             </div>
           </Reveal>
@@ -191,20 +174,13 @@ export default function Home() {
         <Reveal className="card flex flex-col items-start gap-5 bg-navy! p-8! md:flex-row md:items-center md:justify-between md:p-12!">
           <div className="flex flex-col gap-2">
             <h2 className="text-2xl font-semibold text-white md:text-3xl">Ready to celebrate your team?</h2>
-            <p className="text-white/80">Create an account in under a minute.</p>
+            <p className="text-white/80">See TB Rewards in action in a short introductory call.</p>
           </div>
-          <Link href="/signup" className="btn-primary">Get started</Link>
+          <Link href="/book-a-demo" className="btn-primary">Book a demo</Link>
         </Reveal>
       </main>
 
-      <footer className="border-t border-white/70">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
-          <span className="flex items-center gap-2"><Star className="size-4 text-primary" /> TB Rewards · Employee recognition & rewards</span>
-          <nav aria-label="Footer" className="flex gap-6">
-            <a href="#features">Features</a><a href="#faq">FAQ</a><Link href="/login">Log in</Link>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

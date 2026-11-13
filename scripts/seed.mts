@@ -59,4 +59,12 @@ const fulfilled = ok(await maria.rpc("redeem_cart", { p_items: [{ reward_id: awa
 ok(await sa.rpc("fulfill_order", { p_order_id: fulfilled.id }));
 ok(await maria.rpc("redeem_cart", { p_items: [{ reward_id: await rewardId("Movie tickets (2)"), quantity: 1 }], p_idempotency_key: "00000000-0000-4000-8000-000000000002" }));
 
-console.log("Seeded: admin / maria / juan, 6 rewards, awards, 2 orders for Maria.");
+// 4. Sample demo requests (needs migration 0002; skipped if it hasn't been run yet)
+const reqs = await admin.from("demo_requests").select("id").limit(1);
+if (reqs.error) console.warn("Skipped demo requests: run supabase/migrations/0002_demo_requests.sql first.");
+else if (!reqs.data.length) ok(await admin.from("demo_requests").insert([
+  { name: "Jordan Lee", work_email: "jordan.lee@northwind.example", company: "Northwind Traders", company_size: "51-200", message: "We want to replace our spreadsheet-based shout-outs before Q1." },
+  { name: "Priya Nair", work_email: "priya@brightpath.example", company: "BrightPath Clinics", company_size: "201-1000", message: "Interested in rewards for staff across 12 clinics." },
+]));
+
+console.log("Seeded: admin / maria / juan, 6 rewards, awards, 2 orders for Maria, sample demo requests.");

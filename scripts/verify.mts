@@ -98,6 +98,25 @@ try {
   for (const fn of ["award_points", "redeem_cart"]) check("T17", `Anonymous call to ${fn} refused`, !!(await anon.rpc(fn, {})).error);
   check("T17", "Anonymous table reads return nothing", !(await anon.from("profiles").select("id")).data?.length && !(await anon.from("orders").select("id")).data?.length);
 
+  console.log("\n— Book a demo —");
+  const demoEmail = `qa-demo-${Date.now()}@example.com`;
+  const demo = (email: string, extra: Record<string, unknown> = {}) =>
+    anon.rpc("request_demo", { p_name: "QA Demo", p_email: email, p_company: "QA Co", p_size: "11-50", p_message: "test", ...extra });
+  const first = await demo(demoEmail);
+  check("DEMO", "Anyone can submit a valid demo request", !first.error, first.error?.message);
+  const bad = await demo("not-an-email", { p_name: "Q", p_size: "huge" });
+  check("DEMO", "Invalid fields are rejected", bad.error?.message === "INVALID_REQUEST", bad.error?.message);
+  await demo(demoEmail); await demo(demoEmail);
+  const spam = await demo(demoEmail);
+  check("DEMO", "4th request from one email in a day is refused", spam.error?.message === "TOO_MANY_REQUESTS", spam.error?.message);
+  check("DEMO", "Visitors and employees can't read requests", !(await anon.from("demo_requests").select("id")).data?.length && !(await qa.from("demo_requests").select("id")).data?.length);
+  check("DEMO", "Admins can read requests", !!(await admin.from("demo_requests").select("id").eq("work_email", demoEmail)).data?.length);
+  const direct = await anon.from("demo_requests").insert({ name: "Spam", work_email: "s@x.io", company: "Spam", company_size: "1-10" }).select();
+  check("DEMO", "Direct inserts are denied", !!direct.error || !direct.data?.length);
+  const signup = await anon.auth.signUp({ email: `qa-signup-${Date.now()}@example.com`, password: uuid() });
+  check("AUTH", "Public self sign-up is disabled in Supabase", !!signup.error, signup.error?.message ?? "sign-up still enabled: turn it off in Supabase Auth settings");
+  if (signup.data?.user) await svc.auth.admin.deleteUser(signup.data.user.id);
+
   console.log("\n— Code & build —");
   const walk = (d: string): string[] => readdirSync(d).flatMap((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)]));
   const src = walk("app").map((f) => readFileSync(f, "utf8")).join("\n");
@@ -118,6 +137,7 @@ try {
   await svc.from("recognitions").delete().eq("recipient_id", qaId);
   await svc.from("rewards").delete().eq("id", reward);
   await svc.auth.admin.deleteUser(qaId);
+  await svc.from("demo_requests").delete().like("work_email", "qa-demo-%");
 }
 
 console.log("\n— Database integrity —");

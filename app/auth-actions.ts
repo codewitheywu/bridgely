@@ -1,26 +1,20 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 
-export type AuthState = { error?: string; message?: string; values?: { email: string; fullName: string } } | undefined;
+export type AuthState = { error?: string; values?: { email: string } } | undefined;
 
 const email = z.email("Enter a valid email.").max(254);
 const Login = z.object({ email, password: z.string().min(1).max(72) });
-const Signup = z.object({
-  fullName: z.string().trim().min(2, "Enter your name.").max(80),
-  email,
-  password: z.string().min(8, "Password must be at least 8 characters.").max(72),
-});
 // Send each role straight to its home (no bounce through /dashboard).
 async function home(sb: Awaited<ReturnType<typeof supabase>>, uid: string) {
   const { data } = await sb.from("profiles").select("role").eq("id", uid).single();
   return data?.role === "admin" ? "/admin" : "/dashboard";
 }
 // Echo back what the user typed (never the password) so a failed submit doesn't wipe the form.
-const keep = (f: FormData) => ({ email: String(f.get("email") ?? "").slice(0, 254), fullName: String(f.get("fullName") ?? "").slice(0, 80) });
+const keep = (f: FormData) => ({ email: String(f.get("email") ?? "").slice(0, 254) });
 
 export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   const input = Login.safeParse(Object.fromEntries(form));
@@ -31,24 +25,6 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   const { data, error } = await sb.auth.signInWithPassword(input.data);
   if (error) return fail;
   redirect(await home(sb, data.user.id));
-}
-
-export async function signup(_: AuthState, form: FormData): Promise<AuthState> {
-  const input = Signup.safeParse(Object.fromEntries(form));
-  if (!input.success) return { error: input.error.issues[0].message, values: keep(form) };
-  const { fullName, ...creds } = input.data;
-  const origin = (await headers()).get("origin"); // Supabase only accepts allow-listed redirect URLs
-  // Role is never taken from the client: the DB trigger always creates an employee.
-  const { data, error } = await (await supabase()).auth.signUp({
-    ...creds,
-    options: { data: { full_name: fullName }, emailRedirectTo: `${origin}/auth/confirm` },
-  });
-  if (error) {
-    console.error("signup", error.message);
-    return { error: "Couldn't create that account. Try another email.", values: keep(form) };
-  }
-  if (!data.session) return { message: "Check your email to confirm your account." };
-  redirect("/dashboard");
 }
 
 // Demo accounts for the assessor. Password lives only in server env; off unless DEMO_MODE=true.

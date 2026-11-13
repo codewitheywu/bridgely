@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PRIVATE = ["/dashboard", "/rewards", "/cart", "/orders", "/points", "/admin"];
-const GUEST_ONLY = ["/login", "/signup"];
+const GUEST_ONLY = ["/login"];
 
 // Refreshes the session cookie and does optimistic redirects. Real enforcement is RLS + DB functions.
 export async function proxy(req: NextRequest) {

@@ -167,12 +167,28 @@ try {
   const feedback = Date.now() - t0;
   check("UX-03", "Navigation responds instantly (skeleton/URL change)", feedback < 300, `${feedback} ms`);
 
+  // ---------- Book a demo (replaces public sign-up) ----------
+  const demoEmail = `qa-ui-demo-${Date.now()}@example.com`;
+  const pub = await newPage();
+  await pub.goto(`${BASE}/book-a-demo`);
+  await pub.getByLabel("Name *", { exact: true }).fill("Quinn Tester");
+  await pub.getByLabel("Work email *").fill(demoEmail);
+  await pub.getByLabel("Company name *").fill("QA Testing Co");
+  await pub.getByLabel("Company size *").selectOption("11-50");
+  await pub.getByLabel(/Tell us more/).fill("Looking for a recognition tool for 40 people.");
+  await pub.getByRole("button", { name: "Get a demo" }).click();
+  check("DEMO-01", "Book a demo form submits and confirms", await seen(pub.getByText("Thanks, we’ve got it!")));
+  await adm.goto(`${BASE}/admin/requests`);
+  check("DEMO-02", "Admin sees the new request", await seen(adm.getByText(demoEmail)));
+  await pub.goto(`${BASE}/signup`);
+  check("DEMO-03", "Old /signup page is gone (404)", await seen(pub.getByText("Page not found")));
+
   // ---------- Mobile: no horizontal scroll ----------
   const m = await newPage({ width: 375, height: 812 });
   await loginForm(m, qaEmail, qaPw);
   await waitPath(m, "/dashboard");
   const wide: string[] = [];
-  for (const p of ["/", "/login", "/signup", "/dashboard", "/rewards", "/cart", "/orders", "/points"]) {
+  for (const p of ["/", "/login", "/book-a-demo", "/dashboard", "/rewards", "/cart", "/orders", "/points"]) {
     await m.goto(BASE + p, { waitUntil: "networkidle" });
     if (await m.evaluate(() => document.documentElement.scrollWidth > innerWidth)) wide.push(p);
   }
@@ -187,6 +203,7 @@ try {
   await svc.from("recognitions").delete().eq("recipient_id", qaId);
   await svc.from("rewards").delete().in("name", ["QA Desk plant", "QA Notebook set"]);
   await svc.auth.admin.deleteUser(qaId);
+  await svc.from("demo_requests").delete().like("work_email", "qa-ui-demo-%");
 }
 console.log(`\n${failed ? `${failed} FAILED` : "ALL UI CHECKS PASSED"}`);
 process.exit(failed ? 1 : 0);

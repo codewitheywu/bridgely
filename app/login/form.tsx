@@ -8,7 +8,6 @@ import { Field, PasswordField } from "../fields";
 import { Spinner } from "../icons";
 
 const notices: Record<string, string> = {
-  confirm: "That confirmation link is invalid or expired.",
   demo: "Demo login isn't available right now.",
 };
 
@@ -22,7 +21,7 @@ export function LoginForm() {
       <PasswordField autoComplete="current-password" />
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
       <button className="btn-primary" disabled={pending}>{pending ? <><Spinner />Logging in…</> : "Log in"}</button>
-      <p className="text-center text-sm text-muted">New here? <Link href="/signup">Create an account</Link></p>
+      <p className="text-center text-sm text-muted">New to TB Rewards? <Link href="/book-a-demo">Book a demo</Link></p>
     </form>
   );
 }

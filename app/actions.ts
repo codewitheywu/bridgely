@@ -95,3 +95,30 @@ export async function updateOrder(_: Result, form: FormData): Promise<Result> {
   refresh();
   return error ? { ok: false, error: friendly(error.message) } : { ok: true, done: cancel ? "cancelled. Points refunded and stock restored." : "marked fulfilled." };
 }
+
+// ---------- Public: book a demo ----------
+const Demo = z.object({
+  name: z.string().trim().min(2, "Enter your name.").max(80),
+  email: z.email("Enter a valid work email.").max(254),
+  company: z.string().trim().min(2, "Enter your company name.").max(120),
+  size: z.enum(["1-10", "11-50", "51-200", "201-1000", "1000+"], { error: "Select your company size." }),
+  message: z.string().trim().max(1000),
+});
+type DemoResult = { ok: true } | { ok: false; error: string; values: Record<string, string> } | undefined;
+
+export async function requestDemo(_: DemoResult, form: FormData): Promise<DemoResult> {
+  if (form.get("website")) return { ok: true }; // honeypot filled: a bot. Pretend success, store nothing.
+  const values = Object.fromEntries(["name", "email", "company", "size", "message"].map((k) => [k, String(form.get(k) ?? "").slice(0, 1000)]));
+  const p = Demo.safeParse(values);
+  if (!p.success) return { ok: false, error: p.error.issues[0].message, values };
+  const { error } = await (await supabase()).rpc("request_demo", {
+    p_name: p.data.name, p_email: p.data.email, p_company: p.data.company, p_size: p.data.size, p_message: p.data.message || null,
+  });
+  if (!error) return { ok: true };
+  if (error.message !== "TOO_MANY_REQUESTS" && error.message !== "INVALID_REQUEST") console.error("request_demo", error.message);
+  return {
+    ok: false, values,
+    error: error.message === "TOO_MANY_REQUESTS" ? "We’ve already received your request. Our team will be in touch soon."
+      : error.message === "INVALID_REQUEST" ? "Please check the form fields." : "Something went wrong. Please try again.",
+  };
+}
