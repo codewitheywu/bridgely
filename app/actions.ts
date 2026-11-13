@@ -25,7 +25,7 @@ function friendly(raw: string) {
   return map[code] ?? "Something went wrong. Please try again.";
 }
 
-type Result = { ok: true; order?: number } | { ok: false; error: string } | undefined;
+type Result = { ok: true; order?: number; done?: string } | { ok: false; error: string } | undefined;
 
 // ---------- Employee ----------
 const Items = z.array(z.object({ reward_id: z.uuid(), quantity: z.number().int().min(1).max(10) })).min(1).max(20);
@@ -83,14 +83,15 @@ export async function saveReward(_: Result, form: FormData): Promise<Result> {
   return { ok: true };
 }
 
-export async function updateOrder(form: FormData) {
+export async function updateOrder(_: Result, form: FormData): Promise<Result> {
   const id = z.uuid().safeParse(form.get("id"));
-  if (!id.success) return;
+  if (!id.success) return { ok: false, error: "Order not found." };
   const sb = await supabase();
+  const cancel = form.get("op") === "cancel";
   const reason = String(form.get("reason") ?? "").trim().slice(0, 280) || null;
-  const { error } = form.get("op") === "cancel"
+  const { error } = cancel
     ? await sb.rpc("cancel_order", { p_order_id: id.data, p_reason: reason })
     : await sb.rpc("fulfill_order", { p_order_id: id.data });
-  if (error) friendly(error.message);
   refresh();
+  return error ? { ok: false, error: friendly(error.message) } : { ok: true, done: cancel ? "cancelled. Points refunded and stock restored." : "marked fulfilled." };
 }

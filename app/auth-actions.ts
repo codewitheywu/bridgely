@@ -14,6 +14,11 @@ const Signup = z.object({
   email,
   password: z.string().min(8, "Password must be at least 8 characters.").max(72),
 });
+// Send each role straight to its home (no bounce through /dashboard).
+async function home(sb: Awaited<ReturnType<typeof supabase>>, uid: string) {
+  const { data } = await sb.from("profiles").select("role").eq("id", uid).single();
+  return data?.role === "admin" ? "/admin" : "/dashboard";
+}
 // Echo back what the user typed (never the password) so a failed submit doesn't wipe the form.
 const keep = (f: FormData) => ({ email: String(f.get("email") ?? "").slice(0, 254), fullName: String(f.get("fullName") ?? "").slice(0, 80) });
 
@@ -22,9 +27,10 @@ export async function login(_: AuthState, form: FormData): Promise<AuthState> {
   // One generic message: never reveal which field was wrong or whether the email exists.
   const fail = { error: "Invalid email or password.", values: keep(form) };
   if (!input.success) return fail;
-  const { error } = await (await supabase()).auth.signInWithPassword(input.data);
+  const sb = await supabase();
+  const { data, error } = await sb.auth.signInWithPassword(input.data);
   if (error) return fail;
-  redirect("/dashboard");
+  redirect(await home(sb, data.user.id));
 }
 
 export async function signup(_: AuthState, form: FormData): Promise<AuthState> {
@@ -51,8 +57,9 @@ const DEMO = { admin: "admin@example.com", maria: "maria@example.com", juan: "ju
 export async function demoLogin(form: FormData) {
   const who = z.enum(["admin", "maria", "juan"]).safeParse(form.get("who"));
   if (process.env.DEMO_MODE !== "true" || !process.env.DEMO_PASSWORD || !who.success) redirect("/login?error=demo");
-  const { error } = await (await supabase()).auth.signInWithPassword({ email: DEMO[who.data], password: process.env.DEMO_PASSWORD });
-  redirect(error ? "/login?error=demo" : "/dashboard");
+  const sb = await supabase();
+  const { data, error } = await sb.auth.signInWithPassword({ email: DEMO[who.data], password: process.env.DEMO_PASSWORD });
+  redirect(error ? "/login?error=demo" : await home(sb, data.user.id));
 }
 
 export async function logout() {

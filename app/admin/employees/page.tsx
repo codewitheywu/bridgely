@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getMe } from "@/lib/auth";
 import { Avatar, Empty, PageHeader, pts } from "../../ui";
 
+export const metadata = { title: "Employees" };
+
 export default async function Employees() {
   const { sb } = await getMe("admin");
   const [{ data: people }, { data: ledger }, { data: orders }] = await Promise.all([

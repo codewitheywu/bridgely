@@ -2,13 +2,15 @@ import Link from "next/link";
 import { getMe } from "@/lib/auth";
 import { Avatar, date, Empty, orderNo, PageHeader, pts, RewardImage, Section, Stat, Status } from "../../ui";
 
+export const metadata = { title: "Home" };
+
 export default async function Dashboard() {
   const { sb, me } = await getMe("employee");
   const [{ data: recog }, { data: orders }, { data: ledger }, { data: within }, { count: inProgress }] = await Promise.all([
     sb.from("recognitions").select("id, giver_name, points, message, created_at").order("created_at", { ascending: false }).limit(5),
     sb.from("orders").select("id, order_number, status, total_points, created_at").order("created_at", { ascending: false }).limit(3),
     sb.from("points_ledger").select("delta, reason"),
-    sb.from("rewards").select("id, name, image_url, price_points").eq("is_active", true).gt("stock", 0).lte("price_points", me.points_balance).order("price_points", { ascending: false }).limit(3),
+    sb.from("rewards").select("id, name, image_url, category, price_points").eq("is_active", true).gt("stock", 0).lte("price_points", me.points_balance).order("price_points", { ascending: false }).limit(3),
     sb.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
   ]);
   const sum = (reason: string) => (ledger ?? []).filter((e) => e.reason === reason).reduce((s, e) => s + e.delta, 0);
@@ -46,7 +48,7 @@ export default async function Dashboard() {
           <Section title="Rewards within reach" action={<Link href="/rewards" className="text-sm">See all</Link>}>
             {within?.length ? within.map((r) => (
               <Link key={r.id} href="/rewards" className="card flex items-center gap-4 p-4! no-underline!">
-                <div className="w-16 shrink-0"><RewardImage src={r.image_url} alt="" /></div>
+                <div className="w-16 shrink-0"><RewardImage src={r.image_url} alt="" category={r.category} /></div>
                 <div className="min-w-0"><p className="truncate font-medium text-navy">{r.name}</p><p className="text-sm font-semibold text-primary-700">{pts(r.price_points)}</p></div>
               </Link>
             )) : <Empty>Keep earning: rewards you can afford appear here.</Empty>}

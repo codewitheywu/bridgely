@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import { Spinner } from "./icons";
 
 export function Field({ label, ...input }: { label: string } & React.ComponentProps<"input">) {
   return (
@@ -42,12 +43,16 @@ export function PasswordField({ autoComplete, hint }: { autoComplete: string; hi
   );
 }
 
-/** Disables itself while its form is submitting (no double submits); optional confirm dialog. */
-export function Submit({ children, busy, ask, className = "btn-primary" }: { children: React.ReactNode; busy: string; ask?: string; className?: string }) {
-  const { pending } = useFormStatus();
+/** Disables itself while its form submits (no double submits). Spinner shows on the clicked button only. */
+export function Submit({ children, busy, ask, className = "btn-primary", name, value, label }: {
+  children: React.ReactNode; busy?: string; ask?: string; className?: string; name?: string; value?: string; label?: string;
+}) {
+  const { pending, data } = useFormStatus();
+  const mine = pending && (!name || data?.get(name) === value);
   return (
-    <button className={className} disabled={pending} onClick={ask ? (e) => { if (!confirm(ask)) e.preventDefault(); } : undefined}>
-      {pending ? busy : children}
+    <button name={name} value={value} aria-label={label} className={className} disabled={pending}
+      onClick={ask ? (e) => { if (!confirm(ask)) e.preventDefault(); } : undefined}>
+      {mine ? <><Spinner />{busy}</> : children}
     </button>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { signup } from "../auth-actions";
 import { Field, PasswordField } from "../fields";
+import { Spinner } from "../icons";
 import { AuthShell } from "../ui";
 
 export default function SignupPage() {
@@ -18,7 +19,7 @@ export default function SignupPage() {
           <Field label="Work email" name="email" type="email" autoComplete="email" maxLength={254} defaultValue={state?.values?.email} />
           <PasswordField autoComplete="new-password" hint />
           {state?.error && <p role="alert" className="text-sm text-danger">{state.error}</p>}
-          <button className="btn-primary" disabled={pending}>{pending ? "Creating account…" : "Create account"}</button>
+          <button className="btn-primary" disabled={pending}>{pending ? <><Spinner />Creating account…</> : "Create account"}</button>
         </form>
       )}
       <p className="text-center text-sm text-muted">Already have an account? <Link href="/login">Log in</Link></p>

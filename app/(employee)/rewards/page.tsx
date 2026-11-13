@@ -2,6 +2,8 @@ import { getMe } from "@/lib/auth";
 import { PageHeader, pts } from "../../ui";
 import { Catalog } from "./catalog";
 
+export const metadata = { title: "Rewards" };
+
 export default async function Rewards() {
   const { sb, me } = await getMe("employee");
   const { data } = await sb.from("rewards").select("id, name, description, image_url, category, price_points, stock").eq("is_active", true).order("price_points");

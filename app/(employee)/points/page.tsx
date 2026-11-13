@@ -1,6 +1,8 @@
 import { getMe } from "@/lib/auth";
 import { date, Empty, orderNo, PageHeader, pts, Stat } from "../../ui";
 
+export const metadata = { title: "Points history" };
+
 type Entry = { id: number; delta: number; reason: string; balance_after: number; note: string | null; created_at: string; recognitions: { giver_name: string; message: string } | null; orders: { order_number: number } | null };
 
 const label = (e: Entry) =>

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getMe } from "@/lib/auth";
 import { date, Empty, orderNo, PageHeader, pts, RewardImage, Status } from "../../ui";
 
+export const metadata = { title: "My orders" };
+
 type Order = {
   id: string; order_number: number; status: string; total_points: number; created_at: string; cancel_reason: string | null;
   order_items: { id: string; reward_name: string; reward_image_url: string | null; quantity: number; unit_price_points: number }[];

@@ -31,7 +31,7 @@ export function Catalog({ uid, balance, rewards }: { uid: string; balance: numbe
         <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {shown.map((r) => (
             <li key={r.id} className="card flex flex-col gap-3">
-              <div className={r.stock < 1 ? "grayscale" : ""}><RewardImage src={r.image_url} alt={r.name} /></div>
+              <div className={r.stock < 1 ? "grayscale" : ""}><RewardImage src={r.image_url} alt={r.name} category={r.category} /></div>
               {r.category && <span className="text-[12px] font-semibold tracking-wider text-muted uppercase">{r.category}</span>}
               <h2 className="text-lg font-semibold text-navy">{r.name}</h2>
               <p className="line-clamp-2 text-muted">{r.description}</p>
@@ -41,7 +41,7 @@ export function Catalog({ uid, balance, rewards }: { uid: string; balance: numbe
                   {r.stock < 1 ? "Out of stock" : r.stock <= 3 ? `Only ${r.stock} left` : `${r.stock} in stock`}
                 </span>
               </div>
-              <AddToCart uid={uid} id={r.id} stock={r.stock} need={r.price_points - balance} />
+              <AddToCart uid={uid} id={r.id} name={r.name} stock={r.stock} need={r.price_points - balance} />
             </li>
           ))}
         </ul>

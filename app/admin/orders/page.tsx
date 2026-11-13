@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getMe } from "@/lib/auth";
-import { updateOrder } from "../../actions";
-import { Submit } from "../../fields";
 import { Avatar, date, Empty, orderNo, PageHeader, pts, Status } from "../../ui";
+import { OrderActions } from "./order-actions";
+
+export const metadata = { title: "Redemptions" };
 
 const tabs = ["all", "pending", "fulfilled", "cancelled"];
 type Order = {
@@ -48,17 +49,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
               </div>
               {o.cancel_reason && <p className="text-sm text-danger">Cancel reason: {o.cancel_reason}</p>}
               {o.status === "pending" && (
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <form action={updateOrder}>
-                    <input type="hidden" name="id" value={o.id} />
-                    <Submit busy="Saving…" className="btn-primary w-full sm:w-auto">Mark fulfilled</Submit>
-                  </form>
-                  <form action={updateOrder} className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-                    <input type="hidden" name="id" value={o.id} /><input type="hidden" name="op" value="cancel" />
-                    <input name="reason" maxLength={280} placeholder="Cancel reason (optional)" aria-label="Cancel reason" className="field min-w-0 flex-1 py-3!" />
-                    <Submit busy="Cancelling…" className="btn-soft text-danger!" ask={`Cancel order ${orderNo(o.order_number)}? ${pts(o.total_points)} go back to ${o.profiles?.full_name} and stock is restored.`}>Cancel order</Submit>
-                  </form>
-                </div>
+                <OrderActions id={o.id} label={orderNo(o.order_number)} ask={`Cancel order ${orderNo(o.order_number)}? ${pts(o.total_points)} go back to ${o.profiles?.full_name} and stock is restored.`} />
               )}
             </li>
           ))}

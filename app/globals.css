@@ -49,7 +49,7 @@ a {
 }
 
 @utility btn {
-  @apply inline-flex min-h-[52px] cursor-pointer items-center justify-center gap-2 rounded-pill px-7 font-medium no-underline! transition-shadow duration-150 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none;
+  @apply inline-flex min-h-[52px] cursor-pointer items-center justify-center gap-2 rounded-pill px-7 font-medium no-underline! transition-[box-shadow,transform,background-color] duration-150 select-none active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transition-none;
 }
 
 @utility btn-primary {
@@ -75,4 +75,17 @@ body { overflow-x: clip; }
   html { scroll-behavior: smooth; }
   .reveal { opacity: 0; transform: translateX(-48px); transition: opacity 0.7s cubic-bezier(0.25, 0, 0, 1), transform 0.7s cubic-bezier(0.25, 0, 0, 1); }
   .reveal.in { opacity: 1; transform: none; }
+}
+
+/* Interaction feedback: page enter, toasts, badge pop, smooth disclosures */
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@keyframes pop { 50% { transform: scale(1.3); } }
+@media (prefers-reduced-motion: no-preference) {
+  .page-in { animation: page-in 0.3s cubic-bezier(0.25, 0, 0, 1) both; }
+  .toast-in { animation: toast-in 0.2s ease-out both; }
+  .pop { animation: pop 0.3s ease-out; }
+  :root { interpolate-size: allow-keywords; }
+  details.smooth::details-content { height: 0; overflow: clip; transition: height 0.3s cubic-bezier(0.25, 0, 0, 1), content-visibility 0.3s allow-discrete; }
+  details.smooth[open]::details-content { height: auto; }
 }

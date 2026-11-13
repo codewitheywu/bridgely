@@ -2,8 +2,9 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import { logout } from "./auth-actions";
+import { Submit } from "./fields";
 import { Icon } from "./icons";
-import { NavLinks, type NavItem } from "./nav";
+import { CartUser, NavLinks, type NavItem } from "./nav";
 import { Avatar, Loading, Logo, pts } from "./ui";
 
 async function UserChip() {
@@ -11,14 +12,15 @@ async function UserChip() {
   const sb = await supabase();
   const { data } = await sb.auth.getClaims();
   if (!data) return null;
-  const { data: me } = await sb.from("profiles").select("full_name, role, points_balance").eq("id", data.claims.sub).single();
+  const { data: me } = await sb.from("profiles").select("id, full_name, role, points_balance").eq("id", data.claims.sub).single();
   if (!me) return null;
   return (
     <div className="flex items-center gap-3 rounded-2xl p-3 shadow-inset">
+      {me.role === "employee" && <CartUser uid={me.id} />}
       <Avatar name={me.full_name} />
       <div className="min-w-0">
         <p className="truncate font-medium text-navy">{me.full_name}</p>
-        <p className="text-[13px] text-muted">{me.role === "admin" ? "Administrator" : pts(me.points_balance)}</p>
+        <p className="text-[13px] text-muted">{me.role === "admin" ? "Administrator" : `${pts(me.points_balance)} available`}</p>
       </div>
     </div>
   );
@@ -26,9 +28,9 @@ async function UserChip() {
 
 const LogoutButton = ({ compact }: { compact?: boolean }) => (
   <form action={logout}>
-    <button aria-label="Log out" className={`btn-soft min-h-11 ${compact ? "size-11 p-0" : "w-full"}`}>
+    <Submit label={compact ? "Log out" : undefined} className={`btn-soft min-h-11 ${compact ? "size-11 p-0" : "w-full"}`} busy={compact ? undefined : "Logging out…"}>
       <Icon name="logout" />{!compact && "Log out"}
-    </button>
+    </Submit>
   </form>
 );
 

@@ -3,6 +3,8 @@ import { getMe } from "@/lib/auth";
 import { Avatar, date, Empty, PageHeader, pts, Section, Stat } from "../ui";
 import { AwardForm } from "./award-form";
 
+export const metadata = { title: "Admin overview" };
+
 type Recog = { id: string; points: number; message: string; created_at: string; giver_name: string; profiles: { full_name: string } | null };
 
 export default async function AdminHome({ searchParams }: { searchParams: Promise<{ to?: string }> }) {

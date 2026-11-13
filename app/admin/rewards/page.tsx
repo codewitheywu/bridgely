@@ -2,13 +2,15 @@ import { getMe } from "@/lib/auth";
 import { Empty, PageHeader, pts, RewardImage } from "../../ui";
 import { type Reward, RewardForm } from "./form";
 
+export const metadata = { title: "Manage rewards" };
+
 export default async function AdminRewards() {
   const { sb } = await getMe("admin");
   const { data } = await sb.from("rewards").select("id, name, description, image_url, category, price_points, stock, is_active").order("is_active", { ascending: false }).order("name");
   return (
     <>
       <PageHeader title="Rewards" description="Add rewards, set prices and stock, and deactivate what’s retired. Rewards are never deleted, so order history stays intact." />
-      <details className="card group">
+      <details className="card group smooth">
         <summary className="btn-primary w-fit list-none [&::-webkit-details-marker]:hidden">
           <span className="group-open:hidden">+ Add reward</span><span className="hidden group-open:inline">Close</span>
         </summary>
@@ -18,9 +20,9 @@ export default async function AdminRewards() {
         <ul className="flex flex-col gap-4">
           {data.map((r: Reward & { image_url: string | null }) => (
             <li key={r.id} className="card p-4! sm:p-5!">
-              <details className="group">
+              <details className="group smooth">
                 <summary className="flex cursor-pointer list-none items-center gap-4 [&::-webkit-details-marker]:hidden">
-                  <div className={`w-20 shrink-0 md:w-24 ${r.is_active ? "" : "opacity-50 grayscale"}`}><RewardImage src={r.image_url} alt="" /></div>
+                  <div className={`w-20 shrink-0 md:w-24 ${r.is_active ? "" : "opacity-50 grayscale"}`}><RewardImage src={r.image_url} alt="" category={r.category} /></div>
                   <div className="grid min-w-0 flex-1 gap-1 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))] md:items-center md:gap-4">
                     <div className="min-w-0"><p className="truncate font-semibold text-navy">{r.name}</p><p className="text-[13px] text-muted">{r.category ?? "Uncategorized"}</p></div>
                     <p className="text-sm font-semibold text-primary-700">{pts(r.price_points)}</p>

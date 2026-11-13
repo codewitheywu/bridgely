@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icon } from "./icons";
+import { Icon, type IconName } from "./icons";
 
 export const Star = ({ className }: { className?: string }) => <Icon name="star" className={className} />;
 
@@ -66,7 +66,15 @@ const tones: Record<string, string> = { pending: "bg-[#FFF4D6] text-[#8A5A00]", 
 export const Status = ({ s }: { s: string }) => <span className={`inline-flex shrink-0 rounded-pill px-3 py-1 text-[13px] font-medium capitalize ${tones[s]}`}>{s}</span>;
 
 export const Empty = ({ children }: { children: React.ReactNode }) => <div className="card py-10! text-center text-muted">{children}</div>;
-export const Loading = () => <div aria-label="Loading" className="h-64 animate-pulse rounded-3xl bg-edge/60" />;
+const sk = "animate-pulse bg-edge/70";
+/** Skeleton in the shape of a typical page: header, stat row, two content columns. */
+export const Loading = () => (
+  <div aria-busy="true" aria-label="Loading" className="flex flex-col gap-8">
+    <div className="flex flex-col gap-2"><div className={`${sk} h-8 w-60 rounded-xl`} /><div className={`${sk} h-5 w-80 max-w-full rounded-lg`} /></div>
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{[0, 1, 2, 3].map((i) => <div key={i} className={`${sk} h-28 rounded-3xl`} />)}</div>
+    <div className="grid gap-6 lg:grid-cols-3"><div className={`${sk} h-72 rounded-3xl lg:col-span-2`} /><div className={`${sk} h-72 rounded-3xl`} /></div>
+  </div>
+);
 
 export function PageHeader({ title, description, action }: { title: string; description?: string; action?: React.ReactNode }) {
   return (
@@ -108,14 +116,24 @@ export const Avatar = ({ name }: { name: string }) => (
   </span>
 );
 
-export function RewardImage({ src, alt }: { src: string | null; alt: string }) {
+const art: Record<string, [IconName, string]> = {
+  Food: ["coffee", "from-[#FDE3D3] to-[#F6C3A5]"],
+  Experiences: ["ticket", "from-[#E4E7F8] to-[#C7CDEE]"],
+  Tech: ["headphones", "from-[#DCE8F6] to-[#BBD1EC]"],
+  "Time off": ["sun", "from-[#FFF2CF] to-[#FBDD8C]"],
+  Merch: ["shirt", "from-[#E3F2E7] to-[#C3E2CB]"],
+};
+
+/** Uploaded photo, or category artwork until an admin uploads one. */
+export function RewardImage({ src, alt, category }: { src: string | null; alt: string; category?: string | null }) {
   // eslint-disable-next-line @next/next/no-img-element -- Supabase public URLs, no optimizer config needed
   if (src) return <img src={src} alt={alt} className="aspect-[4/3] w-full rounded-2xl object-cover" />;
+  const [icon, tint] = art[category ?? ""] ?? ["gift", "from-[#FDE3D3] to-[#E4E7F8]"];
   return (
-    <div role="img" aria-label={alt} className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-inset">
-      <div className="absolute top-3 right-3 size-[40%] rounded-full bg-primary opacity-80 blur-md" />
-      <div className="absolute bottom-3 left-4 size-[25%] rounded-full bg-navy opacity-60 blur-sm" />
-      <Star className="absolute inset-0 m-auto size-[28%] text-white" />
+    <div role="img" aria-label={alt || undefined} aria-hidden={!alt || undefined} className={`grid aspect-[4/3] w-full place-items-center rounded-2xl bg-linear-to-br ${tint}`}>
+      <span className="grid aspect-square w-[38%] max-w-24 place-items-center rounded-full bg-white/70 shadow-[0_8px_20px_rgb(28_35_75/0.12)]">
+        <Icon name={icon} className="size-1/2 text-navy" />
+      </span>
     </div>
   );
 }
