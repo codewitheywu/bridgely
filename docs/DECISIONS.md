@@ -12,3 +12,8 @@ One line per non-obvious call: date — decision — why — alternative rejecte
 - 2026-11-14 — Demo login buttons with a server-only password — assessors test all roles in one click without exposing credentials to the browser — passwords only in the README
 - 2026-11-14 — "Soft Cloud" UI (soft UI + glass accents) with AA-checked text colors — user's pick from three mockups; colors adjusted for contrast — flat brand style
 - 2026-11-14 — Parked peer recognition, campaigns, leaderboards, budgets — outside the brief; README lists them as next steps — building Qarrot's full feature set
+- 2026-11-14 — loading.tsx skeletons + template fade + useLinkStatus spinners — clicks felt "frozen" while per-user pages loaded — client-side data fetching
+- 2026-11-14 — Toasts fired from the browser after the action returns — server-refreshed cards unmount before a useEffect could fire — inline status text only
+- 2026-11-14 — CSP with 'unsafe-inline' scripts — nonces would force every page dynamic; the rest of the policy (frame-ancestors, form-action, img/connect sources) still applies — no CSP
+- 2026-11-14 — Kept public sign-up (security skill suggested disabling it) — the brief's demo needs it; the DB always creates a 0-point employee — admin-created accounts only
+- 2026-11-14 — verify + e2e use throwaway users/rewards and clean up — repeatable checks without corrupting demo data — testing on Maria/Juan

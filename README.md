@@ -37,7 +37,8 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 - **The database is the source of truth.** Every change to points or stock runs inside one Postgres function and one transaction: `award_points`, `redeem_cart`, `fulfill_order` and `cancel_order`. The browser only sends reward IDs and quantities. Prices and totals are always computed in the database.
 - **No duplicate orders.** Each checkout carries an idempotency key with `unique(user_id, idempotency_key)`, plus a per-user row lock. The Redeem button is also disabled while a request is in flight.
 - **Permissions are enforced by the database, not just the UI.** Every table has row-level security, so employees can read only their own rows. All writes go through functions that check the caller's role. A `CHECK (points_balance >= 0)` constraint means balances can't go negative. A signup can never choose its own role.
-- **Security headers** (frame denial, nosniff, HSTS, referrer policy) are on every page. The service-role key is used only by the local seed script.
+- **Security headers** (Content-Security-Policy, frame denial, nosniff, HSTS, referrer policy) are on every page. The service-role key is used only by local scripts.
+- **Instant feedback:** navigation shows a skeleton immediately, every button shows a spinner while it works and can't be double-submitted, and results appear as toasts.
 
 **Verified against the live database:**
 - 5 parallel checkouts with the same key create 1 order.
@@ -46,12 +47,22 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 - An employee can't award points, edit their own balance, edit rewards, or see another employee's orders.
 - Cancelling an order twice refunds only once.
 
+## Quality checks
+
+Two scripts run against the real Supabase project. Each creates a temporary employee and rewards, then deletes them, so demo data is never touched.
+
+- `npm run verify` runs **31 checks**: the full security threat model, parallel-checkout concurrency, and database integrity (every balance equals its ledger, every order equals its items, nothing negative).
+- `npm run e2e` runs **30 checks** that click through the real UI in Chrome, at desktop size and at 375px mobile. They cover login per role, award, catalog states, a triple-click on Redeem (1 order), persistence, permissions, cancel → refund, fulfil, add/edit/deactivate rewards, no horizontal scroll, and no console errors.
+
+Latest run: **all 61 checks pass.**
+
 ## Run it locally
 
 1. Create a Supabase project and run [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) in its SQL Editor.
 2. Copy `.env.example` to `.env.local` and fill in the Supabase URL, anon key and service-role key, and set `DEMO_MODE` and `DEMO_PASSWORD`.
 3. `npm install`, then `npm run seed` to create the demo accounts, 6 rewards, awards and sample orders. The seed is safe to re-run.
 4. `npm run dev` and open http://localhost:3000.
+5. Optional: `npm run verify`, plus `npm run build && npx next start -p 3125` and then `npm run e2e`.
 
 ## AI tools used
 
@@ -60,9 +71,9 @@ You can also skip typing: the login page has **Admin / Maria / Juan** demo butto
 
 ## Known limitations / unfinished
 
-- **Reward images are placeholders** until an admin uploads one (Admin → Rewards → Edit). Landing-page screenshots are placeholders too.
+- **Rewards show category artwork** until an admin uploads a photo (Admin → Rewards → Edit).
 - **The demo buttons let anyone with the link log in as any test account.** This is intentional for assessment; set `DEMO_MODE=false` to hide them.
 - **No password reset**, profile editing or admin-user management. Promoting a user to admin is done in SQL.
 - **The cart is stored in the browser** (per user, per device). Orders, balances and stock are all stored in the database.
 - **Dates are formatted on the server (UTC)**, so they can be off by a day near midnight in your time zone.
-- **No automated end-to-end test suite.** The behavior above was verified with scripts against the live database.
+- **The CSP allows inline scripts.** Next.js needs them unless every page uses per-request nonces, which would stop pages from being prerendered.
