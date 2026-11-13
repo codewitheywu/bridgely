@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Spinner } from "./icons";
 
@@ -17,12 +17,14 @@ export function Field({ label, ...input }: { label: string } & React.ComponentPr
 export function PasswordField({ autoComplete, hint }: { autoComplete: string; hint?: boolean }) {
   const [show, setShow] = useState(false);
   const [ok, setOk] = useState(false);
+  const id = useId();
+  // The toggle sits outside the <label> so the field's accessible name is just "Password".
   return (
-    <label className="flex flex-col gap-2 text-sm font-medium">
-      Password
+    <div className="flex flex-col gap-2 text-sm font-medium">
+      <label htmlFor={id}>Password</label>
       <span className="relative">
         <input
-          name="password" type={show ? "text" : "password"} autoComplete={autoComplete}
+          id={id} name="password" type={show ? "text" : "password"} autoComplete={autoComplete}
           required minLength={hint ? 8 : undefined} maxLength={72} className="field pr-20"
           aria-describedby={hint ? "pw-hint" : undefined}
           onChange={hint ? (e) => setOk(e.target.value.length >= 8) : undefined}
@@ -39,7 +41,7 @@ export function PasswordField({ autoComplete, hint }: { autoComplete: string; hi
           {ok ? "✓ " : ""}At least 8 characters
         </span>
       )}
-    </label>
+    </div>
   );
 }
 
