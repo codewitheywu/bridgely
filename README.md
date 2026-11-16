@@ -56,10 +56,10 @@ There is no public sign-up. Like Qarrot, new companies use **Book a demo**, and 
 
 Two scripts run against the real Supabase project. Each creates a temporary employee and rewards, then deletes them, so demo data is never touched.
 
-- `npm run verify` runs **31 checks**: the full security threat model, parallel-checkout concurrency, and database integrity (every balance equals its ledger, every order equals its items, nothing negative).
-- `npm run e2e` runs **30 checks** that click through the real UI in Chrome, at desktop size and at 375px mobile. They cover login per role, award, catalog states, a triple-click on Redeem (1 order), persistence, permissions, cancel → refund, fulfil, add/edit/deactivate rewards, no horizontal scroll, and no console errors.
+- `npm run verify` runs **38 checks**: the full security threat model, parallel-checkout concurrency, and database integrity (every balance equals its ledger, every order equals its items, nothing negative).
+- `npm run e2e` runs **35 checks** that click through the real UI in Chrome, at desktop size and at 375px mobile. They cover login per role, award, catalog states, a triple-click on Redeem (1 order), persistence, permissions, cancel → refund, fulfil, add/edit/deactivate rewards, the how-to guide, no horizontal scroll, and no console errors.
 
-Latest run: **all 61 checks pass.**
+Latest run: **all 73 checks pass.**
 
 ## Run it locally
 
