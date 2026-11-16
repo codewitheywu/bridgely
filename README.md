@@ -18,6 +18,8 @@ There is no public sign-up. Like Qarrot, new companies use **Book a demo**, and 
 
 ## How to use the demo
 
+**New here? Open [`/guide`](/guide)**: a 16-step walkthrough from logging in as an employee, to logging out, to running the app as the admin. Each step says where to go, what to do, and what you should see. It's linked from the site header, the login page, and the **How to use** link inside the app.
+
 **As an employee (Maria or Juan)**
 1. **Home** shows your available, earned and redeemed points, a recognition feed, rewards within reach, and recent orders.
 2. **Points** lists every award, redemption and refund, with a running balance.
