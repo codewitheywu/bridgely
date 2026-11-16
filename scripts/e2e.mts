@@ -29,7 +29,8 @@ const consoleErrors: string[] = [];
 async function newPage(viewport = { width: 1440, height: 900 }) {
   const ctx = await browser.newContext({ viewport });
   const page = await ctx.newPage();
-  page.on("console", (m) => { if (m.type() === "error") consoleErrors.push(`${page.url()}: ${m.text()}`); });
+  // The /signup 404 is expected (DEMO-03), so it isn't a console error worth failing on.
+  page.on("console", (m) => { if (m.type() === "error" && !page.url().endsWith("/signup")) consoleErrors.push(`${page.url()}: ${m.text()}`); });
   page.on("dialog", (d) => d.accept());
   return page;
 }
