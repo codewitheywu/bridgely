@@ -1,14 +1,18 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { awardPoints } from "../actions";
 import { Spinner } from "../icons";
 import { toast } from "../toast";
 
 export function AwardForm({ people, defaultRecipient = "" }: { people: { id: string; full_name: string }[]; defaultRecipient?: string }) {
-  const [state, action, pending] = useActionState(awardPoints, undefined);
   const [len, setLen] = useState(0);
-  useEffect(() => { if (state?.ok) { toast("Recognition sent. Points added to their balance."); setLen(0); } }, [state]);
+  // Toast + counter reset happen when the action returns (React then clears the form itself).
+  const [state, action, pending] = useActionState(async (prev: Awaited<ReturnType<typeof awardPoints>>, form: FormData) => {
+    const res = await awardPoints(prev, form);
+    if (res?.ok) { toast("Recognition sent. Points added to their balance."); setLen(0); }
+    return res;
+  }, undefined);
   return (
     <form action={action} className="flex flex-col gap-4">
       <label className="flex flex-col gap-2 text-sm font-medium">Employee
