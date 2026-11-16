@@ -3,19 +3,13 @@
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
-import { cartCount, setCartUser } from "@/lib/cart";
+import { cartCount, setCartUser, subscribeCart } from "@/lib/cart";
 import { Icon, type IconName, Spinner } from "./icons";
 
 export type NavItem = [label: string, href: string, icon: IconName];
 
-const subscribe = (cb: () => void) => {
-  window.addEventListener("cart", cb);
-  window.addEventListener("storage", cb);
-  return () => { window.removeEventListener("cart", cb); window.removeEventListener("storage", cb); };
-};
-
 function CartBadge() {
-  const n = useSyncExternalStore(subscribe, cartCount, () => 0);
+  const n = useSyncExternalStore(subscribeCart, cartCount, () => 0);
   if (!n) return null;
   return <span key={n} aria-label={`${n} in cart`} className="pop absolute -top-1 right-0 grid min-w-5 place-items-center rounded-full bg-primary-600 px-1 text-[11px] leading-5 font-semibold text-white lg:static lg:ml-auto">{n}</span>;
 }

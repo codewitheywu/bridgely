@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
-import { type Cart, readCart, writeCart } from "@/lib/cart";
+import { useMemo, useState, useSyncExternalStore, useTransition } from "react";
+import { parseCart, rawCart, subscribeCart, writeCart } from "@/lib/cart";
 import { redeem } from "../../actions";
 import { Spinner } from "../../icons";
 import { Empty, Loading, pts, RewardImage } from "../../ui";
@@ -12,12 +12,13 @@ type R = { id: string; name: string; image_url: string | null; category: string 
 
 export function CartView({ uid, balance, catalog }: { uid: string; balance: number; catalog: R[] }) {
   const router = useRouter();
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [key, setKey] = useState(""); // idempotency key: same key on retry, new key when the cart changes
+  const raw = useSyncExternalStore(subscribeCart, () => rawCart(uid), () => null); // null on the server
+  const cart = useMemo(() => raw === null ? null : parseCart(raw), [raw]);
+  const [key, setKey] = useState(() => crypto.randomUUID()); // idempotency key: same key on retry, new key when the cart changes
   const [error, setError] = useState("");
+  const [placed, setPlaced] = useState(false); // keeps the skeleton up while we navigate to the order
   const [pending, start] = useTransition();
-  useEffect(() => { setCart(readCart(uid)); setKey(crypto.randomUUID()); }, [uid]);
-  if (!cart) return <Loading />;
+  if (!cart || placed) return <Loading />;
 
   const lines = catalog.filter((r) => cart[r.id]).map((r) => ({ ...r, qty: cart[r.id] }));
   const total = lines.reduce((s, l) => s + l.qty * l.price_points, 0);
@@ -26,13 +27,13 @@ export function CartView({ uid, balance, catalog }: { uid: string; balance: numb
   const setQty = (id: string, qty: number) => {
     const next = { ...cart };
     if (qty < 1) delete next[id]; else next[id] = qty;
-    setCart(next); writeCart(uid, next); setKey(crypto.randomUUID()); setError("");
+    writeCart(uid, next); setKey(crypto.randomUUID()); setError("");
   };
   const checkout = () => {
     if (pending) return;
     start(async () => {
       const res = await redeem(lines.map((l) => ({ reward_id: l.id, quantity: l.qty })), key);
-      if (res?.ok) { writeCart(uid, {}); router.push(`/orders?placed=${res.order}`); }
+      if (res?.ok) { setPlaced(true); writeCart(uid, {}); router.push(`/orders?placed=${res.order}`); }
       else { setError(res?.error ?? "Something went wrong."); router.refresh(); } // refresh shows the latest stock
     });
   };
