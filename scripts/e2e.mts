@@ -183,12 +183,22 @@ try {
   await pub.goto(`${BASE}/signup`);
   check("DEMO-03", "Old /signup page is gone (404)", await seen(pub.getByText("Page not found")));
 
+  // ---------- How-to guide ----------
+  await pub.goto(`${BASE}/guide`);
+  for (let i = 0; i < 5; i++) await pub.getByRole("button", { name: /^Next/ }).click();
+  check("GUIDE-01", "Next walks the steps and focuses each heading", new URL(pub.url()).hash === "#cart" && await pub.evaluate(() => document.activeElement?.id === "step-title"));
+  await pub.goto(`${BASE}/guide#rules`);
+  check("GUIDE-02", "A step link opens that step; the last step offers the demo", await seen(pub.getByRole("heading", { name: "Try to break it" })) && await seen(pub.getByRole("link", { name: "Start the demo" })));
+  await emp.goto(`${BASE}/dashboard`);
+  await emp.locator("aside").getByRole("link", { name: "How to use" }).click();
+  check("GUIDE-03", "Signed-in users reach the guide from the sidebar", await waitPath(emp, "/guide"));
+
   // ---------- Mobile: no horizontal scroll ----------
   const m = await newPage({ width: 375, height: 812 });
   await loginForm(m, qaEmail, qaPw);
   await waitPath(m, "/dashboard");
   const wide: string[] = [];
-  for (const p of ["/", "/login", "/book-a-demo", "/dashboard", "/rewards", "/cart", "/orders", "/points"]) {
+  for (const p of ["/", "/login", "/book-a-demo", "/guide", "/dashboard", "/rewards", "/cart", "/orders", "/points"]) {
     await m.goto(BASE + p, { waitUntil: "networkidle" });
     if (await m.evaluate(() => document.documentElement.scrollWidth > innerWidth)) wide.push(p);
   }
