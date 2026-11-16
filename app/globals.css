@@ -77,6 +77,17 @@ body { overflow-x: clip; }
   .reveal.in { opacity: 1; transform: none; }
 }
 
+/* "Show me around": navy dim everywhere except an orange-ringed hole over the target */
+.tour-spot {
+  position: fixed;
+  border-radius: 28px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgb(28 35 75 / 0.45), 0 0 0 3px var(--color-primary);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tour-spot, .tour-move { transition: top 0.45s cubic-bezier(0.65, 0, 0.35, 1), left 0.45s cubic-bezier(0.65, 0, 0.35, 1), width 0.45s cubic-bezier(0.65, 0, 0.35, 1), height 0.45s cubic-bezier(0.65, 0, 0.35, 1); }
+}
+
 /* Interaction feedback: page enter, toasts, badge pop, smooth disclosures */
 @keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
 @keyframes toast-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
