@@ -21,6 +21,10 @@ const paths = {
   zap: "M13 2L3 14h9l-1 8 10-12h-9z",
   menu: "M4 7h16M4 12h16M4 17h16",
   back: "M19 12H5M12 19l-7-7 7-7",
+  next: "M5 12h14M12 5l7 7-7 7",
+  login: "M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3",
+  external: "M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3",
+  help: "M12 22a10 10 0 100-20 10 10 0 000 20zM9.1 9a3 3 0 015.8 1c0 2-3 3-3 3M12 17h.01",
   inbox: "M22 12h-6l-2 3h-4l-2-3H2M5.5 5.1L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.5-6.9A2 2 0 0016.8 4H7.2a2 2 0 00-1.7 1.1z",
 };
 export type IconName = keyof typeof paths;
