@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getMe } from "@/lib/auth";
+import { ShowMeAround, type TourStep } from "../coach";
 import { Avatar, date, Empty, PageHeader, pts, Section, Stat } from "../ui";
 import { AwardForm } from "./award-form";
 
@@ -19,21 +20,29 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
     sb.from("recognitions").select("id, points, message, created_at, giver_name, profiles!recognitions_recipient_id_fkey(full_name)")
       .order("created_at", { ascending: false }).limit(5).overrideTypes<Recog[], { merge: false }>(),
   ]);
+  const tour: TourStep[] = [
+    ["stats", "Hi! 👋 This is your admin overview: pending orders, points given, and rewards running low."],
+    ["award", "Recognize someone: pick an employee, add points and a short thank-you. It lands in their feed straight away."],
+    ["recent", "Every recognition your team has received, newest first."],
+    ["pending", "Orders waiting for you. Mark them fulfilled, or cancel to refund the points and restore the stock."],
+    ["nav", "Manage Employees, Rewards (prices, stock, images) and demo Requests from here."],
+    ["account", "Log out here when you're done. How to use opens the full step-by-step guide."],
+  ];
   return (
     <>
       <PageHeader title="Admin overview" description="Recognize your team and keep rewards flowing."
-        action={<Link href="/admin/orders?status=pending" className="btn-primary">Review pending orders</Link>} />
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        action={<div className="flex flex-wrap gap-3"><ShowMeAround steps={tour} label="Tour of the admin overview" /><Link href="/admin/orders?status=pending" data-tour="pending" className="btn-primary">Review pending orders</Link></div>} />
+      <div data-tour="stats" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat highlight label="Pending orders" value={pending ?? 0} hint="Waiting for fulfilment" />
         <Stat label="Points awarded" value={(awards ?? []).reduce((s, a) => s + a.delta, 0).toLocaleString()} hint="All time" />
         <Stat label="Active rewards" value={active ?? 0} />
         <Stat label="Low stock" value={lowStock ?? 0} hint="3 or fewer left" />
       </div>
       <div className="grid items-start gap-8 lg:grid-cols-5">
-        <Section title="Award points" className="lg:col-span-2">
+        <Section title="Award points" tour="award" className="lg:col-span-2">
           <div id="award" className="card"><AwardForm people={people ?? []} defaultRecipient={people?.some((p) => p.id === to) ? to : ""} /></div>
         </Section>
-        <Section title="Recent recognition" className="lg:col-span-3" action={<Link href="/admin/employees" className="text-sm">All employees</Link>}>
+        <Section title="Recent recognition" tour="recent" className="lg:col-span-3" action={<Link href="/admin/employees" className="text-sm">All employees</Link>}>
           {recent?.length ? (
             <ul className="card flex flex-col divide-y divide-edge p-0!">
               {recent.map((r) => (

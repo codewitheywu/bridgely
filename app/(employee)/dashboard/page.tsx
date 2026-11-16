@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getMe } from "@/lib/auth";
+import { ShowMeAround, type TourStep } from "../../coach";
 import { Avatar, date, Empty, orderNo, PageHeader, pts, RewardImage, Section, Stat, Status } from "../../ui";
 
 export const metadata = { title: "Home" };
@@ -14,18 +15,27 @@ export default async function Dashboard() {
     sb.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
   ]);
   const sum = (reason: string) => (ledger ?? []).filter((e) => e.reason === reason).reduce((s, e) => s + e.delta, 0);
+  const first = me.full_name.split(" ")[0];
+  const tour: TourStep[] = [
+    ["points", `Hi ${first}! 👋 These are your points. Available is what you can spend right now.`],
+    ["feed", "When someone recognizes your work, it shows up here with their message and the points."],
+    ["browse", "Ready to spend? Browse rewards, add them to your cart, and redeem."],
+    ["orders", "Track each order from Pending to Fulfilled. If one is cancelled, your points come back."],
+    ["nav", "Jump to Rewards, Cart, Orders and your full Points history from here."],
+    ["account", "Log out here when you're done. How to use opens the full step-by-step guide."],
+  ];
   return (
     <>
-      <PageHeader title={`Welcome back, ${me.full_name.split(" ")[0]}`} description="Your recognition and rewards at a glance."
-        action={<Link href="/rewards" className="btn-primary">Browse rewards</Link>} />
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <PageHeader title={`Welcome back, ${first}`} description="Your recognition and rewards at a glance."
+        action={<div className="flex flex-wrap gap-3"><ShowMeAround steps={tour} label="Tour of your home page" /><Link href="/rewards" data-tour="browse" className="btn-primary">Browse rewards</Link></div>} />
+      <div data-tour="points" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat highlight label="Available points" value={me.points_balance.toLocaleString()} hint="Ready to redeem" />
         <Stat label="Earned all time" value={sum("award").toLocaleString()} />
         <Stat label="Redeemed" value={(-sum("redemption") - sum("refund")).toLocaleString()} />
         <Stat label="Orders in progress" value={inProgress ?? 0} />
       </div>
       <div className="grid items-start gap-8 lg:grid-cols-3">
-        <Section title="Recognition feed" className="lg:col-span-2" action={<Link href="/points" className="text-sm">Points history</Link>}>
+        <Section title="Recognition feed" tour="feed" className="lg:col-span-2" action={<Link href="/points" className="text-sm">Points history</Link>}>
           {recog?.length ? (
             <ul className="flex flex-col gap-4">
               {recog.map((r) => (
@@ -53,7 +63,7 @@ export default async function Dashboard() {
               </Link>
             )) : <Empty>Keep earning: rewards you can afford appear here.</Empty>}
           </Section>
-          <Section title="Recent orders" action={<Link href="/orders" className="text-sm">View all</Link>}>
+          <Section title="Recent orders" tour="orders" action={<Link href="/orders" className="text-sm">View all</Link>}>
             {orders?.length ? orders.map((o) => (
               <div key={o.id} className="card flex items-center justify-between gap-3 p-4!">
                 <div><p className="font-medium text-navy">Order {orderNo(o.order_number)}</p><p className="text-[13px] text-muted">{date(o.created_at)} · {pts(o.total_points)}</p></div>

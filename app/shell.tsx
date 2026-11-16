@@ -42,7 +42,7 @@ export function AppShell({ links, children }: { links: NavItem[]; children: Reac
       <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-10 border-r border-white/70 px-5 py-7 lg:flex">
         <Logo />
         <NavLinks links={links} />
-        <div className="mt-auto flex flex-col gap-3">
+        <div data-tour="account" className="mt-auto flex flex-col gap-3">
           <Link href="/guide" className="flex min-h-11 items-center gap-3 rounded-2xl px-4 font-medium text-ink! no-underline! hover:shadow-raised"><Icon name="help" />How to use</Link>
           <Suspense fallback={<div className="h-16 animate-pulse rounded-2xl bg-edge/60" />}><UserChip /></Suspense>
           <LogoutButton />
@@ -51,7 +51,7 @@ export function AppShell({ links, children }: { links: NavItem[]; children: Reac
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/70 bg-base/85 px-4 py-3 backdrop-blur-md sm:px-6 lg:hidden">
           <Logo />
-          <div className="flex gap-2">
+          <div data-tour="account" className="flex gap-2">
             <Link href="/guide" aria-label="How to use" className="btn-soft min-h-11 size-11 p-0"><Icon name="help" /></Link>
             <LogoutButton compact />
           </div>

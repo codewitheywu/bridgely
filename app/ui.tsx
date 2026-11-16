@@ -91,9 +91,9 @@ export function PageHeader({ title, description, action }: { title: string; desc
   );
 }
 
-export function Section({ title, action, children, className = "" }: { title: string; action?: React.ReactNode; children: React.ReactNode; className?: string }) {
+export function Section({ title, action, children, className = "", tour }: { title: string; action?: React.ReactNode; children: React.ReactNode; className?: string; tour?: string }) {
   return (
-    <section className={`flex flex-col gap-4 ${className}`}>
+    <section data-tour={tour} className={`flex flex-col gap-4 ${className}`}>
       <div className="flex min-h-8 items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-navy">{title}</h2>
         {action}
