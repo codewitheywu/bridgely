@@ -18,3 +18,5 @@ One line per non-obvious call: date — decision — why — alternative rejecte
 - 2026-11-14 — Replaced public sign-up with Book a demo (Qarrot's model) — matches the product, and removes anonymous account creation as the security skill advised — keeping self sign-up
 - 2026-11-14 — Demo requests go through a SECURITY DEFINER function with per-email and global rate limits plus a honeypot — the anon key is public, so the database must defend itself — an open anon INSERT policy, or CAPTCHA (third-party script, CSP changes)
 - 2026-11-14 — verify + e2e use throwaway users/rewards and clean up — repeatable checks without corrupting demo data — testing on Maria/Juan
+- 2026-11-16 — "Show me around" coach-mark tour on Home and Overview, started only by a click — highlights the real UI for first-time users, like the Gavina Noble portal — auto-starting on login (gets in the way of an assessor testing flows)
+- 2026-11-16 — Separate /guide page as well as the in-app tour — the guide covers the whole journey (login → logout → admin), the tour explains one screen — one long tour spanning pages

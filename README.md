@@ -2,7 +2,7 @@
 
 A working sample of a Qarrot-style recognition app. Admins award points with a message, and employees redeem those points for rewards in a catalog.
 
-**Live demo:** <YOUR-VERCEL-URL>
+**Live demo:** https://bridgely-rose.vercel.app
 
 ## Test accounts
 
@@ -21,14 +21,14 @@ There is no public sign-up. Like Qarrot, new companies use **Book a demo**, and 
 **New here? Open [`/guide`](/guide)**: a 16-step walkthrough from logging in as an employee, to logging out, to running the app as the admin. Each step says where to go, what to do, and what you should see. It's linked from the site header, the login page, and the **How to use** link inside the app.
 
 **As an employee (Maria or Juan)**
-1. **Home** shows your available, earned and redeemed points, a recognition feed, rewards within reach, and recent orders.
+1. **Home** shows your available, earned and redeemed points, a recognition feed, rewards within reach, and recent orders. Click **Show me around** for a 6-step tour that highlights each part of the page.
 2. **Points** lists every award, redemption and refund, with a running balance.
 3. **Rewards**: search or filter by category, then browse the catalog (image, description, price in points, stock) and **Add to cart**. Rewards you can't afford yet show exactly how many more points you need.
 4. **Cart**: change quantities and check the "balance after" line, then **Redeem**. Checkout is blocked if you can't afford the cart or an item is out of stock.
 5. **Orders** shows your redemption history with Pending / Fulfilled / Cancelled status.
 
 **As the admin**
-1. **Overview** has pending-order, points-awarded, active-reward and low-stock counts, the **Award points** form (employee, points, message), and a recent-recognition feed.
+1. **Overview** has pending-order, points-awarded, active-reward and low-stock counts, the **Award points** form (employee, points, message), and a recent-recognition feed. **Show me around** gives a 6-step tour here too.
 2. **Employees** lists each employee's balance, points earned and redeemed, and order count, with a one-click **Award** shortcut.
 3. **Rewards**: add a reward, or open **Edit** on any reward to change its name, description, price, stock or image, or to deactivate it. Rewards are never deleted, so old orders keep their history.
 4. **Orders**: filter by status (with counts), then **Mark fulfilled** or **Cancel order**. Cancelling refunds the points and restores the stock automatically.
@@ -57,9 +57,9 @@ There is no public sign-up. Like Qarrot, new companies use **Book a demo**, and 
 Two scripts run against the real Supabase project. Each creates a temporary employee and rewards, then deletes them, so demo data is never touched.
 
 - `npm run verify` runs **38 checks**: the full security threat model, parallel-checkout concurrency, and database integrity (every balance equals its ledger, every order equals its items, nothing negative).
-- `npm run e2e` runs **35 checks** that click through the real UI in Chrome, at desktop size and at 375px mobile. They cover login per role, award, catalog states, a triple-click on Redeem (1 order), persistence, permissions, cancel → refund, fulfil, add/edit/deactivate rewards, the how-to guide, no horizontal scroll, and no console errors.
+- `npm run e2e` runs **38 checks** that click through the real UI in Chrome, at desktop size and at 375px mobile. They cover login per role, award, catalog states, a triple-click on Redeem (1 order), persistence, permissions, cancel → refund, fulfil, add/edit/deactivate rewards, the how-to guide, both "Show me around" tours (cards stay on screen at 375px), no horizontal scroll, and no console errors.
 
-Latest run: **all 73 checks pass.**
+Latest run: **all 76 checks pass.**
 
 ## Run it locally
 

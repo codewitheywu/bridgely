@@ -4,7 +4,7 @@
 
 **Before the call:**
 - [ ] Live Vercel link works, and the README has the real URL and password
-- [ ] `/guide` opens on the live link, and "How to use" shows in the app sidebar
+- [ ] `/guide` opens on the live link, "How to use" shows in the app sidebar, and **Show me around** runs on Home and Overview
 - [ ] `0002_demo_requests.sql` has been run, and "Allow new users to sign up" is off in Supabase
 - [ ] Each reward has a real photo (Admin → Rewards → Edit)
 - [ ] `npm run verify` passes
@@ -28,6 +28,9 @@
 
 **Home**
 > "This is Maria's home. She has **650 points available**: she earned 1,200 and redeemed 550. Below is her recognition feed, with each award and its message."
+
+*Click **Show me around** and press Next two or three times, then Skip.*
+> "A first-time employee gets this quick tour. It highlights each part of the real page, and it works on phones too. The admin overview has its own."
 
 **Points**
 > "Every point movement has a reason and a running balance, and it ends at her current balance."
