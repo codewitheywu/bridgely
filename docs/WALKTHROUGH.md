@@ -94,3 +94,4 @@ They will ask this. Use this example:
 - **Order numbers:** Maria's new order won't be #1004. The test runs used up some numbers, so read whatever number appears on screen.
 - **Numbers:** if the balances on screen differ from this script (for example, after more testing), say the numbers you see. What matters is that each change is exact.
 - **Decisions:** for "why did you do X?" questions, see [DECISIONS.md](DECISIONS.md).
+- **Tools:** for "what tools did you use?" and "how do you solve problems?", see [TOOLS_SCRIPT.md](TOOLS_SCRIPT.md).
