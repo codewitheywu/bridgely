@@ -21,7 +21,7 @@ export function LoginForm() {
       <PasswordField autoComplete="current-password" />
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
       <button className="btn-primary" disabled={pending}>{pending ? <><Spinner />Logging in…</> : "Log in"}</button>
-      <p className="text-center text-sm text-muted">New to TB Rewards? <Link href="/book-a-demo">Book a demo</Link></p>
+      <p className="text-center text-sm text-muted">New to TB Rewards? <Link href="/book-a-demo">Book a demo</Link> · <Link href="/guide">How to use it</Link></p>
     </form>
   );
 }

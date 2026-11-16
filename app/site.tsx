@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Icon } from "./icons";
 import { Logo, Star } from "./ui";
 
-const nav = [["Features", "/#features"], ["How it works", "/#how"], ["FAQ", "/#faq"]];
+const nav = [["Features", "/#features"], ["How it works", "/#how"], ["Guide", "/guide"], ["FAQ", "/#faq"]];
 
 /** Public marketing header: links + Log in + Book a demo; collapses to a menu on mobile. */
 export function SiteHeader() {
@@ -34,7 +34,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
         <span className="flex items-center gap-2"><Star className="size-4 text-primary" /> TB Rewards · Employee recognition & rewards</span>
         <nav aria-label="Footer" className="flex gap-6">
-          <Link href="/#features">Features</Link><Link href="/book-a-demo">Book a demo</Link><Link href="/login">Log in</Link>
+          <Link href="/#features">Features</Link><Link href="/guide">Guide</Link><Link href="/book-a-demo">Book a demo</Link><Link href="/login">Log in</Link>
         </nav>
       </div>
     </footer>
