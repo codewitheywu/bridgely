@@ -1,9 +1,10 @@
-# Walkthrough script (about 8 minutes)
+# Walkthrough script (about 8½ minutes)
 
-**Setup:** two browser windows, one logged in as **Maria** and one as **Admin**. Use a private window for the second so the logins don't clash. Rehearse once so your clicks match the numbers below.
+**Setup:** two browser windows, one logged in as **Maria** and one as **Admin**. Use a private window for the second so the logins don't clash. Keep a third tab open on **/guide**. Rehearse once so your clicks match the numbers below.
 
 **Before the call:**
 - [ ] Live Vercel link works, and the README has the real URL and password
+- [ ] `/guide` opens on the live link, and "How to use" shows in the app sidebar
 - [ ] `0002_demo_requests.sql` has been run, and "Allow new users to sign up" is off in Supabase
 - [ ] Each reward has a real photo (Admin → Rewards → Edit)
 - [ ] `npm run verify` passes
@@ -15,6 +16,13 @@
 > "I built TB Rewards with Next.js and Supabase, using Claude Code as my AI coding tool. I set it up with role-based skills: team lead, web developer, designer, database, security, and QA.
 >
 > My main decision was to treat points like money. The database owns every balance and stock change. Awarding, checking out, fulfilling and cancelling each run inside one database transaction, and every point movement is written to a ledger. So even if someone bypasses the website, the rules still hold."
+
+**The guide** (30 sec, in the /guide tab)
+> "Ease of use was one of the criteria, so I added a built-in guide. It walks a new user through the whole thing in 16 steps: logging in as an employee, redeeming, logging out, then running the admin side. Each step says where to go, what to do, and what you should see, and the last step lists the ways to try to break it. It's linked from the header, the login page, and the **How to use** link inside the app. On a phone it becomes one step at a time with a progress bar.
+>
+> I'll follow the same order now."
+
+*Click Next once or twice to show the step list ticking off, then switch to Maria's window.*
 
 ## 2. Employee flow, as Maria (2 min)
 
