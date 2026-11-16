@@ -194,6 +194,23 @@ try {
   await emp.locator("aside").getByRole("link", { name: "How to use" }).click();
   check("GUIDE-03", "Signed-in users reach the guide from the sidebar", await waitPath(emp, "/guide"));
 
+  // ---------- "Show me around" tours ----------
+  const tour = async (pg: Page, home: string) => {
+    await pg.goto(BASE + home);
+    await pg.getByRole("button", { name: "Show me around" }).click();
+    const dlg = pg.getByRole("dialog");
+    let n = 1;
+    while (await dlg.getByRole("button", { name: "Next" }).count()) { await dlg.getByRole("button", { name: "Next" }).click(); n++; }
+    const last = await seen(dlg.getByText(`${n} of ${n}`));
+    await dlg.getByRole("button", { name: "Got it!" }).click();
+    const closed = !(await dlg.count());
+    await pg.getByRole("button", { name: "Show me around" }).click();
+    await pg.keyboard.press("Escape");
+    return n === 6 && last && closed && !(await dlg.count());
+  };
+  check("TOUR-01", "Employee tour: 6 steps; Got it! and Esc close it", await tour(emp, "/dashboard"));
+  check("TOUR-02", "Admin tour: 6 steps; Got it! and Esc close it", await tour(adm, "/admin"));
+
   // ---------- Mobile: no horizontal scroll ----------
   const m = await newPage({ width: 375, height: 812 });
   await loginForm(m, qaEmail, qaPw);
@@ -204,6 +221,16 @@ try {
     if (await m.evaluate(() => document.documentElement.scrollWidth > innerWidth)) wide.push(p);
   }
   check("UX-01", "No horizontal scroll at 375px", !wide.length, wide.join(", "));
+  await m.goto(`${BASE}/dashboard`);
+  await m.getByRole("button", { name: "Show me around" }).click();
+  let inView = true;
+  for (let i = 0; i < 6; i++) {
+    await m.waitForTimeout(700); // let the card glide into place
+    const r = await m.getByRole("dialog").locator("[aria-live]").locator("..").boundingBox();
+    inView &&= !!r && r.x >= 0 && r.y >= 0 && r.x + r.width <= 375 && r.y + r.height <= 812;
+    await m.getByRole("dialog").getByRole("button", { name: /^(Next|Got it!)$/ }).click();
+  }
+  check("TOUR-03", "On a 375px phone every tour card stays on screen", inView);
   check("UX-04", "No console errors (incl. CSP violations)", !consoleErrors.length, consoleErrors.slice(0, 3).join(" | "));
 } finally {
   await browser.close();
